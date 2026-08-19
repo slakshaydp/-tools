@@ -1,0 +1,2215 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="&tools — free browser-based tools for files, images, text, QR codes, developers and calculators.">
+<meta property="og:title" content="&tools — Free tools. Simple. Private. Useful.">
+<meta property="og:description" content="Convert, create, calculate and format directly in your browser.">
+<title>&tools — Free tools. Simple. Private. Useful.</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231a73e8'/%3E%3Cpath d='M18 18h28v7H36v21h-8V25H18z' fill='white'/%3E%3C/svg%3E">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/full.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/piexifjs@1.0.6/piexif.min.js"></script>
+<style>
+:root{--bg-color:#f1f5f9;--surface:rgba(255,255,255,0.65);--surface2:rgba(255,255,255,0.45);--text:#0f172a;--muted:#475569;--line:rgba(0,0,0,0.08);--accent:#1769e0;--accent2:#0e55bd;--good:#14804a;--danger:#c43b3b;--shadow:0 8px 32px 0 rgba(31,38,135,0.1);--radius:18px;--glass-blur:blur(16px)}
+[data-theme=dark]{--bg-color:#0f172a;--surface:rgba(30,41,59,0.65);--surface2:rgba(51,65,85,0.45);--text:#f8fafc;--muted:#94a3b8;--line:rgba(255,255,255,0.1);--accent:#6da7ff;--accent2:#8bb9ff;--good:#53c98b;--danger:#ff7777;--shadow:0 8px 32px 0 rgba(0,0,0,0.3)}
+*{box-sizing:border-box;transition:background-color .3s ease,border-color .3s ease,box-shadow .3s ease;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{margin:0;background-color:var(--bg-color);background-image:radial-gradient(at 0% 0%,rgba(99,102,241,0.15) 0px,transparent 50%),radial-gradient(at 100% 100%,rgba(16,185,129,0.12) 0px,transparent 50%);background-attachment:fixed;color:var(--text);font:15px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header,main,footer{position:relative;z-index:10}
+#weatherCanvas{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:1;pointer-events:none;display:none}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+.wrap{width:min(1280px,calc(100% - 32px));margin:auto}
+.glass{background:var(--surface);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+header{position:sticky;top:0;z-index:50;background:var(--surface);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border-bottom:1px solid var(--line)}
+.nav{height:70px;display:flex;align-items:center;gap:18px}
+.brand{font-weight:900;font-size:22px;letter-spacing:-.8px;text-decoration:none;color:var(--text);display:flex;align-items:center;gap:9px;user-select:none}
+.brand-mark{width:34px;height:34px;border-radius:10px;background:var(--accent);display:grid;place-items:center;color:#fff;font-weight:900}
+.navlinks{display:flex;gap:5px;margin-left:auto;align-items:center}
+.navbtn,.iconbtn{border:1px solid transparent;background:transparent;color:var(--text);border-radius:11px;padding:10px 12px;font-weight:500}
+.navbtn:hover,.iconbtn:hover{background:var(--surface2)}
+.searchTop{flex:0 1 310px;position:relative}
+.searchTop input{width:100%;padding:11px 14px 11px 38px;border:1px solid var(--line);border-radius:12px;background:var(--surface2);color:var(--text);outline:none}
+.searchTop span{position:absolute;left:13px;top:9px;color:var(--muted)}
+.dots{font-size:22px;padding:5px 11px}
+.menu{position:absolute;right:16px;top:60px;width:250px;padding:7px;display:none;z-index:100}
+.menu.glass{background:color-mix(in srgb,var(--bg-color) 88%,transparent);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);border:1px solid var(--line)}
+.menu.open{display:block;animation:fadeDown .2s ease}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+.menu button{width:100%;text-align:left;border:0;background:transparent;color:var(--text);padding:11px 12px;border-radius:9px;font-weight:500}
+.menu button:hover{background:var(--surface2)}
+.menu hr{border:0;border-top:1px solid var(--line);margin:6px}
+.cat-container{position:relative}
+.cat-menu{right:auto;left:0;top:50px;width:220px;max-height:400px;overflow-y:auto}
+@property --angle{syntax:'<angle>';initial-value:0deg;inherits:false}
+@keyframes rotate-gradient{to{--angle:360deg}}
+.ai-btn-wrap{position:relative;padding:2px;border-radius:12px;display:inline-flex;text-decoration:none;background:conic-gradient(from var(--angle),#4285f4,#ea4335,#fbbc05,#34a853,#4285f4);animation:rotate-gradient 3s linear infinite;margin-right:5px}
+.ai-btn-inner{background:linear-gradient(135deg,#a78bfa,#3b82f6);padding:8px 14px;border-radius:10px;display:flex;align-items:center;gap:6px;transition:filter .2s ease}
+.ai-btn-wrap:hover .ai-btn-inner{filter:brightness(1.15)}
+.ai-btn-text{font-weight:900;color:#ffffff}
+.hero{padding:70px 0 36px}
+.heroGrid{display:grid;grid-template-columns:1.35fr .65fr;gap:30px;align-items:end}
+.eyebrow{font-weight:800;color:var(--accent);letter-spacing:.08em;text-transform:uppercase;font-size:12px}
+.hero h1{font-size:clamp(38px,6vw,72px);line-height:.98;letter-spacing:-3px;margin:13px 0 18px;max-width:800px}
+.hero p{font-size:18px;color:var(--muted);max-width:700px}
+.heroSearch{margin-top:25px;display:flex;gap:9px}
+.heroSearch input{flex:1;padding:17px 18px;border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:14px;box-shadow:var(--shadow);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);outline:none}
+.heroSearch input:focus{border-color:var(--accent)}
+.primary{background:var(--accent);color:#fff;border:0;border-radius:12px;padding:12px 17px;font-weight:800}
+.primary:hover{background:var(--accent2);transform:translateY(-1px)}
+.secondary{background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:11px 15px;font-weight:700;backdrop-filter:var(--glass-blur)}
+.secondary:hover{background:var(--surface2);transform:translateY(-1px)}
+.stats{display:flex;gap:15px;padding:20px}
+.stat{flex:1}
+.stat b{font-size:28px;display:block}
+.stat span{color:var(--muted);font-size:13px}
+.popular{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--text);padding:8px 11px;border-radius:999px;cursor:pointer;backdrop-filter:var(--glass-blur)}
+.chip:hover{background:var(--surface2)}
+section{padding:28px 0}
+.sectionHead{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:17px}
+.sectionHead h2{margin:0;font-size:27px;letter-spacing:-.7px}
+.sectionHead p{margin:4px 0 0;color:var(--muted)}
+.category{margin-top:26px}
+.categoryTitle{display:flex;align-items:center;gap:10px;margin:0 0 12px;font-size:18px}
+.categoryTitle .count{font-size:11px;color:var(--muted);border:1px solid var(--line);padding:3px 7px;border-radius:999px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.card{padding:17px;min-height:142px;display:flex;flex-direction:column;gap:10px}
+.card:hover{transform:translateY(-4px);border-color:color-mix(in srgb,var(--accent) 50%,var(--line))}
+.cardTop{display:flex;justify-content:space-between;gap:8px}
+.card h3{margin:0;font-size:16px}
+.card p{margin:0;color:var(--muted);font-size:13px;flex:1}
+.openTool{margin-top:auto}
+.fav{border:0;background:transparent;color:var(--muted);font-size:18px;padding:2px;cursor:pointer}
+.fav.active{color:#e2a800;text-shadow:0 0 8px rgba(226,168,0,0.4)}
+.workspace{display:none;padding:24px;margin:20px 0;border-radius:22px}
+.workspace.active{display:block;animation:fadeDown .3s ease}
+.workspaceHead{display:flex;justify-content:space-between;gap:15px;align-items:start;border-bottom:1px solid var(--line);padding-bottom:17px;margin-bottom:20px}
+.workspaceHead h2{margin:0;font-size:27px}
+.workspaceHead p{margin:4px 0 0;color:var(--muted)}
+.workspaceActions{display:flex;gap:8px}
+.toolForm{display:grid;gap:14px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.field{display:grid;gap:6px}
+.field label{font-weight:750;font-size:13px}
+.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);background:var(--surface2);color:var(--text);border-radius:11px;padding:11px 12px;outline:none;transition:all .2s ease}
+.field textarea{min-height:140px;resize:vertical}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 20%,transparent);background:var(--surface)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.result{border:1px solid var(--line);background:var(--surface2);border-radius:13px;padding:15px;white-space:pre-wrap;overflow:auto;margin-top:12px;font-family:inherit}
+.drop{border:1.5px dashed var(--line);padding:25px;text-align:center;border-radius:15px;background:var(--surface2);cursor:pointer;transition:all .2s ease}
+.drop:hover{border-color:var(--accent);background:var(--surface)}
+.drop.drag{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--surface))}
+.drop input{display:none}
+footer{border-top:1px solid var(--line);margin-top:50px;padding:35px 0 45px;color:var(--muted);user-select:none}
+.footgrid{display:grid;grid-template-columns:1.5fr repeat(3,1fr);gap:25px}
+.footgrid h4{color:var(--text);margin:0 0 10px}
+.footgrid a{display:block;color:var(--muted);text-decoration:none;margin:6px 0}
+.footgrid a:hover{color:var(--accent)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:100;display:none;place-items:center;padding:15px;backdrop-filter:blur(8px)}
+.overlay.open{display:grid;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{width:min(900px,100%);max-height:min(92vh,900px);overflow:auto}
+.modalHead{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid var(--line);gap:12px}
+.modalHead h3{margin:0}
+.modalBody{padding:20px}
+.close{width:42px;height:42px;border:1px solid var(--line);background:var(--surface2);color:var(--text);border-radius:11px;font-size:20px;display:grid;place-items:center}
+.close:hover{background:var(--danger);color:#fff}
+.gameShell{display:grid;grid-template-rows:auto 1fr auto;gap:12px}
+.gameCanvasWrap{display:grid;place-items:center;background:#080b10;border-radius:15px;padding:10px;min-height:250px}
+.gameCanvas{width:min(100%,720px);aspect-ratio:16/9;display:block;background:#0b1017;border-radius:10px;image-rendering:pixelated}
+.gameBottom{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center}
+.gamePad{display:grid;grid-template-columns:48px 48px 48px;grid-template-rows:48px 48px 48px;gap:5px;justify-content:center}
+.gamePad button,.ab button{border:1px solid #394454;background:#1d2734;color:#fff;border-radius:11px;font-weight:900;touch-action:manipulation;user-select:none}
+.gamePad button:active,.ab button:active{background:#394454}
+.up{grid-column:2}.left{grid-column:1;grid-row:2}.right{grid-column:3;grid-row:2}.down{grid-column:2;grid-row:3}
+.ab{display:flex;gap:10px}
+.ab button{width:54px;height:54px;border-radius:50%;background:#762f47}
+.ab button:active{background:#963a58}
+.instructions{color:var(--muted);font-size:13px}
+.scorebar{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--surface2);padding:10px 12px;border-radius:11px}
+.scorebar b{font-variant-numeric:tabular-nums}
+.toast{position:fixed;right:18px;bottom:18px;z-index:300;background:#18212c;border:1px solid var(--line);color:#fff;padding:11px 16px;border-radius:12px;box-shadow:var(--shadow);transform:translateY(20px);opacity:0;pointer-events:none;transition:.3s cubic-bezier(0.175,0.885,0.32,1.275)}
+.toast.show{transform:none;opacity:1}
+.searchResults{position:absolute;top:54px;left:0;right:0;overflow:hidden;z-index:70;display:none}
+.searchResults.show{display:block;animation:fadeDown .2s ease}
+.searchItem{padding:10px 12px;border-bottom:1px solid var(--line);cursor:pointer}
+.searchItem:last-child{border:0}
+.searchItem:hover{background:var(--surface2)}
+.searchItem small{display:block;color:var(--muted)}
+.hidden{display:none!important}
+.danger{color:var(--danger)}
+.muted{color:var(--muted)}
+.center{text-align:center}
+.coffee{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.upi{font-weight:900;font-size:20px;letter-spacing:.3px}
+.qrbox{background:#fff;padding:12px;border-radius:12px;width:max-content;display:inline-block}
+.gold-btn{color:#ffca28!important;font-weight:700!important;text-shadow:0 0 8px rgba(255,202,40,0.4)}
+.gold-btn:hover{background:rgba(255,202,40,0.1)!important}
+.editor-layout{display:grid;grid-template-columns:1fr 1fr;gap:15px;height:500px;margin-bottom:10px}
+@media (max-width:800px){.editor-layout{grid-template-columns:1fr;grid-template-rows:1fr 1fr;height:800px}}
+@media(max-width:1000px){.grid{grid-template-columns:repeat(3,1fr)}.heroGrid{grid-template-columns:1fr}.footgrid{grid-template-columns:1fr 1fr}.navlinks{display:none}.searchTop{margin-left:auto;max-width:270px}}
+@media(max-width:700px){.wrap{width:min(100% - 22px,1280px)}.nav{height:62px;gap:8px}.brand{font-size:19px}.brand-mark{width:31px;height:31px}.searchTop{display:none}.hero{padding:45px 0 25px}.hero h1{font-size:43px;letter-spacing:-2px}.hero p{font-size:16px}.heroSearch{display:grid}.grid{grid-template-columns:1fr 1fr}.card{min-height:135px;padding:14px}.two,.three,.coffee{grid-template-columns:1fr}.workspace{padding:16px}.workspaceHead{display:grid}.gameBottom{grid-template-columns:1fr}.gameCanvasWrap{min-height:200px}.footgrid{grid-template-columns:1fr}.modal{border-radius:16px}.overlay{padding:8px}.ai-btn-inner{padding:6px 10px;font-size:13px;gap:4px}.ai-btn-text{font-size:13px}.ai-btn-wrap{margin-right:2px}}
+@media (max-width:700px){header{overflow:visible}.nav{width:calc(100% - 22px);max-width:1280px;min-width:0;margin-left:auto;margin-right:auto;gap:5px;padding-left:0;padding-right:0;justify-content:center;overflow:visible}.brand{flex:0 0 auto;min-width:0;font-size:16px;gap:5px;letter-spacing:-.6px;white-space:nowrap}.brand-mark{width:30px;height:30px;flex:0 0 30px}.cat-container{flex:0 0 auto;min-width:0}#catBtn{width:34px;height:34px;max-width:34px;padding:0;display:grid;place-items:center;font-size:0;overflow:hidden}#catBtn::before{content:"☷";font-size:21px;line-height:1}.ai-btn-wrap{flex:0 0 auto;min-width:0;margin-right:0}.ai-btn-inner{padding:5px 6px;gap:2px;white-space:nowrap}.ai-btn-text{font-size:10px;white-space:nowrap}#weatherBtn,#themeBtn,#dotsBtn{width:32px;height:32px;min-width:32px;flex:0 0 32px;padding:3px;display:grid;place-items:center;font-size:16px}#dotsBtn{font-size:20px}.nav > .iconbtn{flex-shrink:0}.menu{right:0;top:56px;max-width:calc(100vw - 22px)}}
+@media (max-width:380px){.nav{width:calc(100% - 20px);gap:4px}.brand{font-size:15px;gap:4px}.brand-mark{width:28px;height:28px;flex-basis:28px}#catBtn{width:31px;max-width:31px;height:31px}#catBtn::before{font-size:19px}.ai-btn-inner{padding:4px 5px}.ai-btn-text{font-size:9px}#weatherBtn,#themeBtn,#dotsBtn{width:30px;min-width:30px;height:30px}}
+.ai-score{font-size:30px;font-weight:900;letter-spacing:-1px}
+.ai-note{border-left:3px solid var(--accent);padding-left:10px}
+.meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.meta-card{padding:13px;border:1px solid var(--line);background:var(--surface2);border-radius:12px}
+.meta-card b{display:block;margin-bottom:3px}
+.map-link{display:inline-flex;align-items:center;gap:6px;margin-top:7px;color:var(--accent);font-weight:800;text-decoration:none}
+.clean-list{display:grid;gap:7px;margin-top:12px}
+.clean-row{display:flex;justify-content:space-between;gap:10px;padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:var(--surface2)}
+.clean-row span:last-child{color:var(--muted);text-align:right}
+.scicalc{max-width:760px;margin:auto;padding:14px;border-radius:24px;background:linear-gradient(145deg,#202833,#10151c);border:1px solid rgba(255,255,255,.12);box-shadow:0 20px 55px rgba(0,0,0,.35)}
+.scicalc-screen{background:#cbd5b8;color:#172018;border-radius:12px;padding:13px 14px;min-height:88px;box-shadow:inset 0 2px 7px rgba(0,0,0,.28);font-family:"Courier New",monospace}
+.scicalc-expression{font-size:15px;min-height:22px;overflow:auto;white-space:nowrap;text-align:right}
+.scicalc-value{font-size:28px;font-weight:900;min-height:38px;overflow:auto;white-space:nowrap;text-align:right}
+.scicalc-mode{font-size:11px;font-weight:800;opacity:.7;text-align:left;margin-bottom:4px}
+.scicalc-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:7px;margin-top:12px}
+.scikey{min-height:45px;border:1px solid #39434f;border-radius:10px;background:linear-gradient(#303b47,#202932);color:#f8fafc;font-weight:800;box-shadow:0 2px 0 #111820;touch-action:manipulation;user-select:none}
+.scikey:active{transform:translateY(1px);box-shadow:none}
+.scikey.fn{font-size:12px}
+.scikey.ac{background:#6f2e39}
+.scikey.eq{background:#2d6a52}
+.scikey.op{background:#3b536d}
+.scicalc-help{margin-top:10px;font-size:12px;color:#a9b5c3;text-align:center}
+.game-screen{position:relative;margin-top:10px;background:#07100a;border:2px solid #485748;border-radius:12px;min-height:300px;overflow:hidden;display:none}
+.game-screen canvas{width:100%;height:auto;display:block;image-rendering:pixelated}
+.game-controls{display:grid;grid-template-columns:repeat(3,54px);justify-content:center;gap:7px;margin-top:10px}
+.game-controls button{width:54px;height:46px;border-radius:10px;border:1px solid #45505a;background:#2a3540;color:#fff;font-weight:900}
+.game-controls .wide{grid-column:1/-1;width:170px;justify-self:center}
+.calc-status{font-size:11px;color:#a9b5c3;text-align:center;margin-top:7px}
+@media(max-width:600px){.meta-grid{grid-template-columns:1fr}.scicalc{padding:9px}.scicalc-grid{gap:5px}.scikey{min-height:42px;font-size:13px}.scikey.fn{font-size:10px}}
+@media(max-width:390px){.scicalc-grid{grid-template-columns:repeat(6,1fr)}.scikey{min-height:40px}}
+.metadata-plus-note{font-size:12px;color:var(--muted)}
+.drop{position:relative;cursor:pointer;min-height:110px;display:grid;place-items:center}
+.drop input[type=file]{display:none!important}.drop b,.drop div{pointer-events:none}
+.fileMetaLine{margin-top:7px;font-size:12px;color:var(--muted);word-break:break-word}
+.meta-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.meta-card{padding:12px;border:1px solid var(--line);background:var(--surface2);border-radius:12px}.meta-card b{display:block;margin-bottom:4px}.meta-card span{word-break:break-word}
+.clean-list{display:grid;gap:7px;margin-top:12px}.clean-row{display:flex;justify-content:space-between;gap:10px;padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:var(--surface2)}.clean-row span:last-child{text-align:right;color:var(--muted)}
+.map-link{display:inline-flex;align-items:center;gap:6px;color:var(--accent);font-weight:800;text-decoration:none;margin-top:8px}.privacyNote{font-size:12px;color:var(--muted);margin-top:10px}
+html{scroll-behavior:smooth;scroll-padding-top:78px;-webkit-overflow-scrolling:touch}
+body{overscroll-behavior-y:none}*{scrollbar-width:thin}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+main,.workspace,.modal,.overlay{scroll-margin-top:78px}
+.workspace,.modalBody,.result,.searchResults{overscroll-behavior:contain}
+.card,.secondary,.primary,.iconbtn,.navbtn,.chip{will-change:transform}
+</style>
+</head>
+<body>
+<canvas id="weatherCanvas"></canvas>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#" aria-label="&tools home"><span class="brand-mark">&amp;</span>&amp;tools</a>
+    
+    <div class="cat-container">
+      <button class="navbtn" id="catBtn">Categories ▾</button>
+      <div class="menu glass cat-menu" id="catMenu"></div>
+    </div>
+    
+    <div class="searchTop">
+      <span>⌕</span><input id="topSearch" aria-label="Search tools" placeholder="Search tools…">
+      <div id="topResults" class="searchResults glass"></div>
+    </div>
+    <div class="navlinks">
+      <button class="navbtn" onclick="showFavorites()">★ Favorites</button>
+      <button class="navbtn" onclick="showRecent()">Recent</button>
+    </div>
+    
+    <a href="https://1000codes.online/" target="_blank" class="ai-btn-wrap" aria-label="1000 Codes">
+      <div class="ai-btn-inner">
+        <span class="ai-btn-text">✨ 1000 Codes</span>
+      </div>
+    </a>
+    
+    <button class="iconbtn" id="weatherBtn" onclick="toggleWeatherShortcut()" oncontextmenu="openWeatherModal(); return false;" aria-label="Toggle Weather" title="Click to toggle weather, Right-click/Long-press for settings">⛅</button>
+    <button class="iconbtn" id="themeBtn" aria-label="Toggle theme">☀</button>
+    <button class="iconbtn dots" id="dotsBtn" aria-label="Open menu" aria-expanded="false">⋮</button>
+    
+    <div class="menu glass" id="menu" role="menu">
+      <button onclick="about()">About &amp;tools</button>
+      <button onclick="contact()">Contact</button>
+      <button onclick="focusSearch()">Search Tools</button>
+      <button onclick="cycleTheme()">Toggle Theme</button>
+      <button onclick="showFavorites()">★ Favorites</button>
+      <button onclick="showRecent()">Recent Tools</button>
+      <button onclick="shareSite()">Share &amp;tools</button>
+      <button onclick="copyPage()">Copy Page Link</button>
+      <hr>
+      <button onclick="openWeatherModal()">Weather Effects ⛅</button>
+      <button onclick="coffee()" class="gold-btn">Buy Me a Coffee ☕</button>
+      <hr>
+      <button onclick="exportData()">Export Data</button>
+      <button onclick="importData()">Import Data</button>
+      <button onclick="resetSettings()">Reset Settings</button>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+<div class="wrap heroGrid">
+<div>
+<div class="eyebrow">&amp;TOOLS / BROWSER UTILITIES</div>
+<h1>The tools you need, seamlessly.</h1>
+<p>Convert files, create PDFs, edit HTML, resize images, and generate QR codes — directly and securely in your browser with real-time liquid UI.</p>
+<div class="heroSearch"><input id="heroSearch" placeholder="Search tools… Try image to PDF, QR code, HTML editor"><button class="primary" onclick="doSearch()">Find a tool</button></div>
+<div class="popular" id="popular"></div>
+</div>
+<div class="stats glass"><div class="stat"><b id="toolCount">0</b><span>ready-to-use tools</span></div><div class="stat"><b>Local</b><span>instant browser processing</span></div></div>
+</div>
+</section>
+
+<section id="tools">
+<div class="wrap">
+<div class="sectionHead"><div><h2 id="viewTitle">All tools</h2><p>Pick a tool to start immediately.</p></div><button class="secondary" onclick="clearSearch()">Clear Filters</button></div>
+<div id="toolGroups"></div>
+</div>
+</section>
+
+<section class="wrap">
+<div id="workspace" class="workspace glass">
+<div class="workspaceHead"><div><h2 id="wsTitle"></h2><p id="wsDesc"></p></div><div class="workspaceActions"><button class="secondary" onclick="closeWorkspace()">Close Tool</button></div></div>
+<div id="wsBody"></div>
+</div>
+</section>
+</main>
+
+<footer>
+<div class="wrap footgrid">
+<div><h2 style="color:var(--text);margin:0">&amp;tools</h2><p>Free tools for everyday digital tasks.</p><p>© 2026 &amp;tools.</p></div>
+<div><h4>Tools</h4><a href="#tools" onclick="setCategory('')">All tools</a><a href="#tools" onclick="$('catBtn').click();return false;">Categories</a><a href="#" onclick="showFavorites();return false">Favorites</a></div>
+<div><h4>Support</h4><a href="#" onclick="about();return false">About</a><a href="#" onclick="contact();return false">Contact</a><a href="#" onclick="coffee();return false">Buy Me a Coffee</a></div>
+<div><h4>Info</h4><a href="#" onclick="about();return false">Client-Side Architecture</a></div>
+</div>
+</footer>
+
+<div class="overlay" id="modalOverlay" aria-hidden="true">
+<div class="modal glass" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+<div class="modalHead"><h3 id="modalTitle"></h3><button class="close" id="modalClose" aria-label="Close">×</button></div>
+<div class="modalBody" id="modalBody"></div>
+</div>
+</div>
+
+<div class="overlay" id="fsOverlay" style="z-index: 1000; padding: 0;">
+  <div class="glass" style="width: 100vw; height: 100vh; display: flex; flex-direction: column; background: var(--bg-color); border-radius: 0;">
+    <div style="padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line);">
+      <div style="display: flex; gap: 10px;">
+        <button class="primary" onclick="setPreviewMode('desktop')">💻 Desktop View</button>
+        <button class="secondary" onclick="setPreviewMode('mobile')">📱 Mobile View</button>
+      </div>
+      <button class="close" onclick="closeHtmlFullscreen()" style="border-radius: 50%; font-size: 24px;">×</button>
+    </div>
+    <div style="flex: 1; display: flex; justify-content: center; align-items: center; background: #000; overflow: hidden; padding: 10px;">
+      <iframe id="fsIframe" style="width: 100%; height: 100%; background: #fff; border: none; transition: width 0.3s ease; border-radius: 8px;"></iframe>
+    </div>
+  </div>
+</div>
+
+<div class="toast glass" id="toast"></div>
+
+<script>
+if (window.pdfjsLib) window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+const TOOLS=[
+["Image Tools","Image Converter","Convert common raster images to JPG, PNG, WebP, BMP, GIF, TIFF, or ICO format.","image converter format"],
+["Image Tools","Image Resizer","Resize an image by exact pixels or scaling percentage.","resize photo image dimension scale"],
+["Image Tools","Image Compressor","Export JPEG, PNG or WebP with adjustable quality compression levels.","compress photo image quality"],
+["Image Tools","Image Cropper","Crop an image precisely with custom numeric pixel coordinates.","crop photo trim"],
+["Image Tools","Image Rotator","Rotate an image 90°, 180°, 270°, or custom angles.","rotate photo orientation"],
+["Image Tools","Image Flipper","Flip an image horizontally or vertically.","flip mirror imageing"],
+["Image Tools","JPG to PNG","Convert JPG/JPEG images to transparent PNG files.","jpg png format"],
+["Image Tools","PNG to JPG","Convert PNG images to JPEG format with background fill options.","png jpg format"],
+["Image Tools","JPG to WebP","Convert JPEG images to high-compression WebP.","jpg webp format"],
+["Image Tools","PNG to WebP","Convert PNG images to WebP format.","png webp format"],
+["Image Tools","WebP to JPG","Convert WebP images back to standard JPEG.","webp jpg format"],
+["Image Tools","WebP to PNG","Convert WebP images to lossless PNG.","webp png format"],
+["Image Tools","Image to PDF","Create a standalone PDF document from any single image.","image pdf document"],
+["Image Tools","Multiple Images to PDF","Combine multiple images into a multi-page PDF document.","images pdf merge batch"],
+["Image Tools","Passport Photo Maker","Create a printable 35×45 mm passport-style photo grid sheet.","passport photo sheet"],
+["Image Tools","Photo Size Converter","Resize photos instantly to common standard pixel dimensions.","photo size standard"],
+["Image Tools","DPI Changer","Export an image at selected metadata DPI configurations.","dpi image resolution"],
+["Image Tools","Image Metadata Viewer","Inspect comprehensive browser-readable image properties and EXIF data.","metadata exif image details"],
+["Image Tools","Image Metadata Remover","Re-encode image files to completely strip embedded metadata.","metadata remove privacy"],
+["Image Tools","Signature Image Maker","Draw, preview, and download a transparent digital signature image.","signature drawing canvas"],
+["Image Tools","Image Collage Maker","Combine up to 6 images into custom multi-column grids.","collage images layout"],
+["PDF Tools","JPG to PDF","Create a PDF document directly from a JPG picture file.","jpg pdf creator"],
+["PDF Tools","PNG to PDF","Create a PDF document directly from a PNG image file.","png pdf creator"],
+["PDF Tools","PDF to JPG","Convert PDF pages into downloadable JPG image files.","pdf to jpg image extract"],
+["PDF Tools","PDF to PNG","Convert PDF pages into downloadable PNG image files.","pdf to png image extract"],
+["PDF Tools","PDF Merger","Merge multiple PDF files into one clean document sequence.","pdf merge combine"],
+["PDF Tools","PDF Splitter","Extract selected page ranges or separate individual pages from a PDF.","pdf split separate"],
+["PDF Tools","PDF Page Extractor","Extract chosen pages precisely into a brand new PDF file.","pdf extract pages"],
+["PDF Tools","PDF Page Deleter","Generate a copy of a PDF document without selected pages.","pdf delete pages"],
+["PDF Tools","PDF Page Reorder","Reorder PDF pages dynamically using custom page-number sequences.","pdf reorder arrange"],
+["PDF Tools","PDF Rotator","Rotate all or selected pages by 90°, 180°, or 270° orientation.","pdf rotate orientation"],
+["PDF Tools","PDF Watermark","Add customizable diagonal text watermarks covering full PDF pages.","pdf watermark protection"],
+["PDF Tools","PDF Page Numbering","Add sequential page numbering badges to every page of a PDF.","pdf page numbers footer"],
+["PDF Tools","PDF Text Extractor","Extract all selectable plain text layers out of PDF files.","pdf text extract read"],
+["PDF Tools","PDF Metadata Viewer","Read complete embedded PDF document information tags.","pdf metadata properties"],
+["PDF Tools","PDF Metadata Remover","Save a clean copy with all sensitive document metadata cleared.","pdf metadata remove privacy"],
+["Document Tools","TXT to PDF","Create a clean formatted PDF document file from plain text.","txt pdf document"],
+["Document Tools","TXT to DOCX","Download a clean Word DOCX generated from plain text input.","txt docx word"],
+["Document Tools","TXT to HTML","Convert plain text paragraphs into clean HTML markup.","txt html convert"],
+["Document Tools","DOCX to HTML","Convert Word DOCX contents to formatted HTML source code.","docx html converter"],
+["Document Tools","HTML to PDF","Render raw HTML code fragments into downloadable PDF files.","html pdf render"],
+["Document Tools","Markdown to HTML","Render and export Markdown syntax as clean HTML.","markdown html converter"],
+["Document Tools","HTML to Markdown","Convert HTML markup into clean Markdown format.","html markdown convert"],
+["Document Tools","CSV to XLSX","Convert CSV table data to Excel XLSX spreadsheet files.","csv xlsx excel"],
+["Document Tools","XLSX to CSV","Convert the primary XLSX spreadsheet sheet to raw CSV data.","xlsx csv excel"],
+["Document Tools","CSV to PDF","Turn comma-separated row text into readable tabular PDF files.","csv pdf table"],
+["Developer Tools","HTML Live Editor","Write HTML, CSS, and JS code with an instant real-time live preview.","html editor code"],
+["Developer Tools","JSON Formatter","Format, beautify, and validate complex JSON strings.","json formatter validator"],
+["Developer Tools","JSON Minifier","Minify and compress JSON structures down completely.","json minifier compress"],
+["Developer Tools","CSV to JSON","Convert tabular CSV text inputs into formatted JSON arrays.","csv json converter"],
+["Developer Tools","JSON to CSV","Convert JSON data arrays into comma-separated CSV text.","json csv converter"],
+["Developer Tools","Base64 Encoder","Encode UTF-8 string text into valid Base64 format.","base64 encode developer"],
+["Developer Tools","Base64 Decoder","Decode Base64 string data back into readable UTF-8 text.","base64 decode developer"],
+["Developer Tools","URL Encoder","Encode special text characters for safe URL routing.","url encode developer"],
+["Developer Tools","URL Decoder","Decode URL-encoded string segments back to normal text.","url decode developer"],
+["Developer Tools","UUID Generator","Generate unique cryptographic standard UUID v4 identifiers.","uuid generator unique"],
+["Developer Tools","Hash Generator","Create secure SHA-256, SHA-1, and MD5 hashes locally.","hash sha256 md5 generator"],
+["Developer Tools","Timestamp Converter","Convert Unix timestamp numbers to readable dates and back.","timestamp date unix converter"],
+["Developer Tools","Regex Tester","Test regular expression matching patterns against sample text.","regex tester validator"],
+["Developer Tools","Color Converter","Convert colors instantly between HEX, RGB, HSL, and CMYK.","color converter hex rgb hsl cmyk"],
+["Developer Tools","HTML Entity Encoder","Encode special characters into safe HTML entities.","html entity encode"],
+["Developer Tools","HTML Entity Decoder","Decode HTML entity strings back to literal characters.","html entity decode"],
+["Developer Tools","JWT Decoder","Decode JSON Web Tokens to inspect header and payload data.","jwt decoder token developer"],
+["QR Tools","URL QR","Generate a scannable QR code for any website URL.","qr url generator"],
+["QR Tools","Text QR","Generate a QR code containing custom text strings.","qr text generator"],
+["QR Tools","WhatsApp QR","Generate a direct WhatsApp chat QR code payload.","qr whatsapp link"],
+["QR Tools","Phone QR","Generate a telephone call QR code payload.","qr phone tel"],
+["QR Tools","Email QR","Generate a pre-filled mailto email QR code payload.","qr email mailto"],
+["QR Tools","Wi-Fi QR","Generate a standard Wi-Fi network connection QR code payload.","qr wifi network"],
+["QR Tools","vCard QR","Generate a digital contact vCard business card QR payload.","qr vcard contact card"],
+["QR Tools","Location QR","Generate a maps coordinate search query QR code payload.","qr location maps"],
+["QR Tools","SMS QR","Generate an automated SMS text message QR code payload.","qr sms message"],
+["QR Tools","UPI QR","Generate a custom UPI merchant payment QR code payload.","qr upi payment"],
+["WhatsApp Tools","WhatsApp Link Generator","Create, copy, and open custom wa.me direct messaging links.","whatsapp link generator"],
+["Text Tools","Word Counter","Count words, characters, sentences, paragraphs, and lines.","word count text analysis"],
+["Text Tools","Case Converter","Convert text to UPPERCASE, lowercase, Title Case, camelCase, snake_case, or kebab-case.","case text converter"],
+["Text Tools","Remove Duplicate Lines","Remove repeated identical text lines while maintaining order.","duplicate lines remove"],
+["Text Tools","Sort Lines","Sort text lines alphabetically in ascending or descending order.","sort lines text"],
+["Text Tools","Reverse Text","Reverse characters or complete word order in strings.","reverse text backwards"],
+["Text Tools","Remove Extra Spaces","Normalize whitespace, tabs, and line breaks automatically.","spaces text normalize"],
+["Text Tools","Find & Replace","Find and replace specific text strings with optional case-sensitivity.","find replace text"],
+["Text Tools","Text Diff","Compare two blocks of text side-by-side line by line.","diff text compare"],
+["Text Tools","Lorem Ipsum Generator","Generate custom placeholder paragraph text blocks.","lorem ipsum placeholder"],
+["Text Tools","Slug Generator","Create clean URL-friendly slugs from arbitrary text strings.","slug generator url"],
+["Text Tools","Text to Binary","Convert plain text characters to binary byte strings.","text binary converter"],
+["Text Tools","Binary to Text","Convert binary byte strings back into plain readable text.","binary text converter"],
+["Text Tools","Text to Hex","Convert plain text characters to Hexadecimal representation.","text hex converter"],
+["Text Tools","Hex to Text","Convert Hexadecimal strings back into standard text characters.","hex text converter"],
+["Text Tools","Text Scrambler","Randomize and scramble letter positions inside words.","text scrambler fun"],
+["Calculators & Utilities","Percentage Calculator","Calculate exact percentage values, ratios, increases, and decreases.","percentage calculator math"],
+["Calculators & Utilities","Age Calculator","Calculate exact age in years, months, days, and hours from birth dates.","age calculator date"],
+["Calculators & Utilities","Date Difference","Calculate exact time duration between two calendar dates.","date difference calculator"],
+["Calculators & Utilities","BMI Calculator","Calculate Body Mass Index (BMI) with detailed health category breakdowns.","bmi calculator health fitness"],
+["Calculators & Utilities","Length Converter","Convert seamlessly between meters, kilometers, centimeters, millimeters, feet, yards, miles, and inches.","length converter units"],
+["Calculators & Utilities","Weight Converter","Convert between kilograms, grams, milligrams, pounds, and ounces.","weight converter units"],
+["Calculators & Utilities","Temperature Converter","Convert temperatures between Celsius, Fahrenheit, and Kelvin scales.","temperature converter celsius fahrenheit kelvin"],
+["Calculators & Utilities","Speed Converter","Convert speed units between km/h, mph, m/s, and knots.","speed converter units"],
+["Calculators & Utilities","Time Converter","Convert time units between seconds, minutes, hours, days, weeks, and years.","time converter units"],
+["Calculators & Utilities","Data Storage Converter","Convert data storage sizes between bytes, KB, MB, GB, TB, and PB.","data storage converter bytes gb tb"],
+["Calculators & Utilities","EMI Calculator","Calculate monthly loan EMI payments, total principal, and total interest.","emi calculator loan finance"],
+["Calculators & Utilities","Discount Calculator","Calculate final sale prices and total monetary savings.","discount calculator shopping"],
+["Calculators & Utilities","GST Calculator","Calculate tax-inclusive or tax-exclusive GST amounts precisely.","gst calculator tax finance"],
+["Calculators & Utilities","Tip Calculator","Calculate gratuity tips and split bills evenly among people.","tip calculator split bill"],
+["Calculators & Utilities","Random Number Generator","Generate random integer numbers within custom min/max ranges.","random number generator math"],
+["Calculators & Utilities","Password Generator","Generate ultra-secure custom cryptographic passwords with symbol rules.","password generator security"],
+["Calculators & Utilities","Stopwatch","High-precision browser stopwatch with lap split time tracking.","stopwatch timer utility"],
+["Calculators & Utilities","Countdown Timer","Configurable countdown timer with acoustic alert notifications.","countdown timer utility"],
+["AI Tools","AI Text Detector","Estimate AI-like writing signals locally.","ai detector text"],
+["AI Tools","Natural Style Rewriter","Rewrite text into a more natural, varied, reader-friendly style entirely in your browser.","humanize text rewrite natural style ai"],
+["AI Tools","AI Image Signal Checker","Inspect image metadata and embedded generator markers for possible AI-generation signals.","ai image detector photo generated metadata"],
+["AI Tools","AI Video Signal Checker","Inspect video metadata and embedded encoder/generator markers for possible AI-generation signals.","ai video detector generated metadata"],
+["AI Tools","AI Document Detector","Extract text from TXT, DOCX and PDF files and estimate AI-like writing signals locally.","ai detector document docx pdf"],
+["AI Tools","AI PPT Detector","Extract text from PPTX slides and estimate AI-like writing signals locally.","ai detector powerpoint pptx presentation"],
+["AI Tools","AI File Analyzer","Analyze common text, document, presentation, image and video files for local AI-related signals and metadata.","ai file analyzer media document"],
+["AI Tools","Image Metadata Cleaner","Create a clean image copy without common embedded metadata.","image metadata cleaner privacy ai"],
+["AI Tools","Video Metadata Viewer","Inspect basic video file metadata and encoder markers available to the browser.","video metadata viewer file"],
+["Privacy & Metadata","Photo Details Viewer & Editor","View common photo details, GPS coordinates, timestamps and editable JPEG metadata fields.","photo exif metadata gps location date time editor"],
+["Privacy & Metadata","Photo Safety Cleaner","Re-encode a photo to a clean sharing copy with common embedded metadata removed.","photo privacy remove metadata clean sharing"],
+["Privacy & Metadata","Video Details Viewer","Inspect browser-readable video dimensions, duration, codecs and file information.","video metadata details privacy"],
+["Privacy & Metadata","Video Safety Re-encoder","Create a fresh browser-recorded video copy when the device supports MediaRecorder playback capture.","video privacy reencode metadata cleaner"],
+["Privacy & Metadata","PDF Privacy Cleaner","Create a PDF copy with common document metadata fields cleared.","pdf privacy metadata cleaner"],
+["Privacy & Metadata","Office Privacy Cleaner","Clean common DOCX, PPTX and XLSX document properties and custom metadata.","docx pptx xlsx office metadata cleaner"],
+["Privacy & Metadata","File Metadata Inspector","Inspect file name, type, size, timestamps and supported embedded metadata before sharing.","file metadata inspector privacy"],
+["Privacy & Metadata","Safe Sharing Cleaner","Choose a supported file and create the safest browser-side cleaned copy available for that format.","safe sharing metadata privacy cleaner"],
+["Calculators & Utilities","Scientific Calculator","A full-featured scientific calculator with expression entry.","scientific calculator math"],
+["QR & Generators","WhatsApp QR Generator","Generate a QR code that opens a WhatsApp chat for a phone number.","whatsapp qr code phone number generator"],
+["Privacy & Metadata","Image EXIF & GPS Cleaner","Remove common EXIF, GPS, camera, device, software, author and timestamp metadata.","image exif gps metadata remover cleaner"],
+["Privacy & Metadata","PDF Document Properties Cleaner","Remove PDF author, creator, producer, title, subject, keywords.","pdf metadata author cleaner"],
+["Privacy & Metadata","Office Author & Revision Cleaner","Remove common DOCX, PPTX and XLSX author, modified-by, and custom properties.","office docx pptx xlsx metadata"],
+["Privacy & Metadata","Audio Metadata Cleaner","Create a browser-safe cleaned audio copy when supported.","audio mp3 wav metadata cleaner"],
+["Privacy & Metadata","Video Container Metadata Cleaner","Inspect video metadata and create a newly encoded browser-supported sharing copy.","video mp4 webm metadata cleaner"],
+["Privacy & Metadata","General Metadata Report","Show file-level information and supported embedded metadata.","metadata inspector all files"],
+["AI & Privacy","AI Image Provenance Cleaner","Re-encode an image and remove common metadata for sharing.","ai image provenance metadata cleaner"],
+["AI & Privacy","AI Video Provenance Cleaner","Create a fresh browser-supported video stream.","ai video provenance metadata cleaner"],
+["AI & Privacy","AI PDF Provenance Cleaner","Clear common PDF author/creator/producer properties.","ai pdf provenance metadata cleaner"],
+["AI & Privacy","AI DOCX Provenance Cleaner","Clear common DOCX metadata.","ai docx provenance metadata cleaner"],
+["AI & Privacy","AI PPTX Provenance Cleaner","Clear common PPTX metadata.","ai pptx provenance metadata cleaner"],
+["AI & Privacy","AI XLSX Provenance Cleaner","Clear common XLSX metadata.","ai xlsx provenance metadata cleaner"],
+["AI & Privacy","AI Audio Provenance Cleaner","Decode supported browser audio and write a fresh WAV.","ai audio provenance metadata cleaner"],
+["AI & Privacy","AI File Provenance Cleaner","Clean supported files using the strongest safe browser-side method.","ai file provenance cleaner"],
+["Social & QR","Telegram Link & QR","Create a Telegram phone/username link and scannable QR code.","telegram link qr number username"]
+];
+
+const byCat={};TOOLS.forEach(t=>(byCat[t[0]]??=[]).push(t));
+function refreshToolCount(){const e=$("toolCount");if(e)e.textContent=TOOLS.length}
+const key=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,"-");
+const state={favorites:new Set(JSON.parse(localStorage.getItem("andtools_favorites")||"[]")),recent:JSON.parse(localStorage.getItem("andtools_recent_tools")||"[]")};
+const $=id=>document.getElementById(id);
+let currentCategory = "";
+
+function save(){localStorage.setItem("andtools_favorites",JSON.stringify([...state.favorites]));localStorage.setItem("andtools_recent_tools",JSON.stringify(state.recent.slice(0,12)))}
+function toast(s){const x=$("toast");x.textContent=s;x.classList.add("show");clearTimeout(window.__toast);window.__toast=setTimeout(()=>x.classList.remove("show"),2200)}
+
+function populateCategories(){
+  let html=`<button onclick="setCategory('')"><b>All Categories</b></button><button onclick="showFavorites()" style="color:#e2a800; font-weight:700;">★ Favorites</button><hr>`;
+  Object.keys(byCat).forEach(c=>{html+=`<button onclick="setCategory('${c}')">${c}</button>`});
+  $("catMenu").innerHTML=html;
+}
+
+function setCategory(c){
+  currentCategory=c;$("catBtn").textContent=c?c+" ▾":"Categories ▾";$("viewTitle").textContent=c?c:"All tools";
+  $("catMenu").classList.remove("open");renderTools($("heroSearch").value);
+  if(c)document.querySelector("#tools").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function renderTools(filter=""){
+  const f=filter.trim().toLowerCase();let out="";
+  Object.entries(byCat).forEach(([cat,arr])=>{
+    if(currentCategory&&currentCategory!==cat)return;
+    const list=arr.filter(t=>!f||t.join(" ").toLowerCase().includes(f));
+    if(!list.length)return;
+    out+=`<div class="category"><h3 class="categoryTitle">${cat}<span class="count">${list.length}</span></h3><div class="grid">`;
+    list.forEach(t=>{
+      const id=key(t[1]);
+      out+=`<article class="card glass" data-tool="${id}"><div class="cardTop"><h3>${esc(t[1])}</h3><button class="fav ${state.favorites.has(id)?"active":""}" aria-label="Favorite ${esc(t[1])}" onclick="toggleFav('${id}',event)">★</button></div><p>${esc(t[2])}</p><button class="secondary openTool" onclick="openTool('${id}')">Open tool</button></article>`;
+    });
+    out+="</div></div>";
+  });
+  $("toolGroups").innerHTML=out||`<div class="result center glass">No tools found matching your criteria.</div>`;
+}
+
+function esc(s){return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function toggleFav(id,e){e?.stopPropagation();state.favorites.has(id)?state.favorites.delete(id):state.favorites.add(id);save();renderTools($("heroSearch").value);toast(state.favorites.has(id)?"✓ Added to favorites":"✓ Removed from favorites")}
+function showFavorites(){closeMenu();const ids=[...state.favorites];currentCategory="";$("viewTitle").textContent="★ Favorites";renderTools("");document.querySelectorAll(".category").forEach(c=>c.style.display="none");const title=document.createElement("div");title.className="result glass";title.innerHTML=ids.length?`${ids.map(id=>{const t=TOOLS.find(x=>key(x[1])===id);return t?`<button class="secondary" style="margin:6px" onclick="openTool('${id}')">${esc(t[1])}</button>`:""}).join("")}`:"No favorites yet. Tap ★ on any tool to save it here.";$("toolGroups").prepend(title);location.hash="tools"}
+function showRecent(){closeMenu();const ids=state.recent;currentCategory="";$("viewTitle").textContent="Recently Used Tools";renderTools("");document.querySelectorAll(".category").forEach(c=>c.style.display="none");const title=document.createElement("div");title.className="result glass";title.innerHTML=ids.length?`${ids.map(id=>{const t=TOOLS.find(x=>key(x[1])===id);return t?`<button class="secondary" style="margin:6px" onclick="openTool('${id}')">${esc(t[1])}</button>`:""}).join("")}`:"No recent tools yet.";$("toolGroups").prepend(title);location.hash="tools"}
+function clearSearch(){$("heroSearch").value="";setCategory("");}
+function doSearch(){renderTools($("heroSearch").value);location.hash="tools"}
+function focusSearch(){closeMenu();$("heroSearch").focus();window.scrollTo({top:$("heroSearch").getBoundingClientRect().top+scrollY-100,behavior:"smooth"})}
+function searchDropdown(input,box){const q=input.value.trim().toLowerCase();if(!q){box.classList.remove("show");return}const arr=TOOLS.filter(t=>t.join(" ").toLowerCase().includes(q)).slice(0,7);box.innerHTML=arr.map(t=>`<div class="searchItem" onclick="openTool('${key(t[1])}')"><b>${esc(t[1])}</b><small>${esc(t[0])}</small></div>`).join("")||`<div class="searchItem">No matching tool</div>`;box.classList.add("show")}
+
+$("topSearch").addEventListener("input",e=>searchDropdown(e.target,$("topResults")));
+$("heroSearch").addEventListener("input",e=>renderTools(e.target.value));
+document.addEventListener("keydown",e=>{if(e.key==="/"&&!/input|textarea/i.test(document.activeElement.tagName)){e.preventDefault();focusSearch()}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();focusSearch()}if(e.key==="Escape"){closeMenu();closeModal();closeWorkspace()}});
+$("catBtn").onclick=e=>{e.stopPropagation();$("catMenu").classList.toggle("open");};
+$("dotsBtn").onclick=e=>{e.stopPropagation();$("menu").classList.toggle("open");$("dotsBtn").setAttribute("aria-expanded",$("menu").classList.contains("open"))};
+document.addEventListener("click",e=>{
+  if(!e.target.closest("#menu")&&!e.target.closest("#dotsBtn")) closeMenu();
+  if(!e.target.closest(".searchTop")) $("topResults").classList.remove("show");
+  if(!e.target.closest("#catBtn") && !e.target.closest("#catMenu")) $("catMenu").classList.remove("open");
+});
+function closeMenu(){$("menu").classList.remove("open");$("dotsBtn").setAttribute("aria-expanded","false")}
+
+function setTheme(v){
+  document.documentElement.dataset.theme=v;
+  localStorage.setItem("andtools_theme",v);
+  $("themeBtn").textContent=v==="dark"?"☀":"◐";
+  if(wState.active) {
+    if(document.getElementById("darkControls")) {
+      document.getElementById("darkControls").style.display = (v==='dark') ? 'block' : 'none';
+    }
+  }
+}
+function cycleTheme(){
+  const cur=localStorage.getItem("andtools_theme")||"dark";
+  setTheme(cur==="dark"?"light":"dark");
+  closeMenu();
+}
+$("themeBtn").onclick=cycleTheme;
+
+function about() {
+  closeMenu();
+  openModal("About &amp;tools", `
+    <p><strong>&amp;tools</strong> is a lightning-fast, privacy-first utility suite designed to process files, text, images, and calculations entirely within your local browser environment. Because everything runs client-side, your data never leaves your device, ensuring complete privacy and security.</p>
+    <p>This project was proudly created and developed by <strong>Akshay S L</strong>.</p>
+    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--line);">
+      <h4 style="margin: 0 0 8px 0; color: var(--accent);">Explore More: 1000 Codes</h4>
+      <p>&amp;tools is part of a larger ecosystem of developer resources. If you are looking for high-quality projects, source code, and web development resources, be sure to explore our sister site, <strong><a href="https://1000codes.online/" target="_blank" style="color: var(--accent); text-decoration: none;">1000 Codes</a></strong>.</p>
+    </div>
+  `);
+}
+
+function contact() {
+  closeMenu();
+  openModal("Contact", `
+    <p>Have suggestions, or feedback to elevate this platform? We'd love to hear from you.</p>
+    <p><strong>Email:</strong> <a href="mailto:akshaysldpoffical@gmail.com" style="color: var(--accent); text-decoration: none;">akshaysldpoffical@gmail.com</a></p>
+    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--line);">
+      <h4 style="margin: 0 0 8px 0; color: var(--accent);">Visit 1000 Codes</h4>
+      <p>Looking for the ultimate collection of AI prompts and short codes? Visit our premier platform, <strong><a href="https://1000codes.online/" target="_blank" style="color: var(--accent); text-decoration: none;">1000 Codes</a></strong>, crafted to the highest standards to elevate your AI workflows.</p>
+    </div>
+  `);
+}
+
+function coffee(){
+  closeMenu();
+  openModal("☕ Buy Me a Coffee",`<div class="coffee"><div><p>Enjoying &amp;tools? Support helps keep the tools free, fast, and constantly updated.</p><div class="upi">akshaysldp@slc</div><div class="actions" style="margin-top:12px"><button class="primary" onclick="copyText('akshaysldp@slc');toast('✓ UPI ID copied')">Copy UPI ID</button><a class="secondary" style="text-decoration:none;display:inline-flex;align-items:center" href="upi://pay?pa=akshaysldp@slc&pn=%26tools&cu=INR&am=100">Open UPI App</a></div></div><div class="center"><div id="upiQr" class="qrbox"></div><p class="muted">Scan & Pay via UPI</p></div></div>`);
+  setTimeout(()=>new QRCode($("upiQr"),{text:"upi://pay?pa=akshaysldp@slc&pn=%26tools&cu=INR&am=100",width:180,height:180,colorDark:"#000",colorLight:"#fff"}),50);
+}
+
+function shareSite(){closeMenu();if(navigator.share)navigator.share({title:"&tools",text:"Free tools. Simple. Private. Useful.",url:location.href});else copyPage()}
+function copyPage(){copyText(location.href);toast("✓ Link copied")}
+async function copyText(v){try{await navigator.clipboard.writeText(v)}catch{const ta=document.createElement("textarea");ta.value=v;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove()}}
+function exportData(){closeMenu();const data={favorites:[...state.favorites],recent:state.recent,theme:localStorage.getItem("andtools_theme")||"dark",highscores:JSON.parse(localStorage.getItem("andtools_highscores")||"{}"),weather:JSON.parse(localStorage.getItem("andtools_weather")||"{}")};downloadBlob(new Blob([JSON.stringify(data,null,2)],{type:"application/json"}),"andtools-data.json")}
+function importData(){closeMenu();const i=document.createElement("input");i.type="file";i.accept=".json,application/json";i.onchange=async()=>{try{const d=JSON.parse(await i.files[0].text());if(Array.isArray(d.favorites))state.favorites=new Set(d.favorites.filter(x=>typeof x==="string"));if(Array.isArray(d.recent))state.recent=d.recent.filter(x=>typeof x==="string").slice(0,12);if(["light","dark"].includes(d.theme))setTheme(d.theme);if(d.highscores&&typeof d.highscores==="object")localStorage.setItem("andtools_highscores",JSON.stringify(d.highscores));if(d.weather)localStorage.setItem("andtools_weather",JSON.stringify(d.weather));save();renderTools();toast("✓ Data imported")}catch{toast("Could not import file")}};i.click()}
+function resetSettings(){closeMenu();if(confirm("Reset &tools settings, favorites, recent tools and scores?")){localStorage.removeItem("andtools_favorites");localStorage.removeItem("andtools_recent_tools");localStorage.removeItem("andtools_theme");localStorage.removeItem("andtools_highscores");localStorage.removeItem("andtools_weather");state.favorites.clear();state.recent=[];setTheme("dark");renderTools();toast("Settings reset")}}
+function closeWorkspace(){if(scState?.game)stopCalcGame();$("workspace").classList.remove("active");$("wsBody").innerHTML=""}
+
+function openTool(id){
+  const t=TOOLS.find(x=>key(x[1])===id);if(!t)return;
+  state.recent=[id,...state.recent.filter(x=>x!==id)].slice(0,12);save();
+  $("topResults").classList.remove("show");
+  $("wsTitle").textContent=t[1];$("wsDesc").textContent=t[2];
+  $("wsBody").innerHTML=toolUI(t[1]);
+  $("workspace").classList.add("active");
+  $("workspace").scrollIntoView({behavior:"smooth",block:"start"});
+  bindTool(t[1]);
+}
+
+function fileBox(multiple=false,accept="*"){
+  return `<div class="drop glass" data-filebox="1"><input id="fileInput" type="file" ${multiple?"multiple":""} accept="${accept}"><b>Drop file${multiple?"s":""} here or click to browse</b><div class="fileMetaLine" id="fileInfo">No file selected</div></div>`;
+}
+function setupAllFilePickers(){
+  document.querySelectorAll('.drop').forEach(drop=>{
+    const input=drop.querySelector('input[type="file"]');if(!input||drop.dataset.bound==='1')return;drop.dataset.bound='1';
+    drop.addEventListener('click',e=>{if(e.target!==input)input.click()});input.addEventListener('click',e=>e.stopPropagation());
+    const info=drop.querySelector('.fileMetaLine,[id$="Info"]');const update=()=>{if(info)info.textContent=input.files?.length?[...input.files].map(f=>`${f.name} (${(f.size/1024/1024).toFixed(2)} MB)`).join(' • '):'No file selected'};input.addEventListener('change',update);
+    ['dragenter','dragover'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.add('drag')}));['dragleave','drop'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.remove('drag')}));
+    drop.addEventListener('drop',e=>{const fs=e.dataTransfer?.files;if(!fs?.length)return;try{const dt=new DataTransfer();[...fs].forEach(f=>dt.items.add(f));input.files=dt.files;input.dispatchEvent(new Event('change',{bubbles:true}))}catch{toast('Tap the file box to choose the file')}});
+  });
+}
+function setupDrop(){setupAllFilePickers()}
+function showFiles(fs){if(!fs||!fs.length)return;const x=$("fileInfo");if(x)x.textContent=[...fs].map(f=>`${f.name} (${(f.size/1024/1024).toFixed(2)} MB)`).join(' | ')}
+
+window.loadHtmlFile = function(input) {
+  const f = input.files[0];
+  if(!f) return;
+  const r = new FileReader();
+  r.onload = e => { 
+    $("htmlCode").value = e.target.result; 
+    updateLivePreview(); 
+    toast("✓ HTML Code Loaded");
+  };
+  r.readAsText(f);
+};
+window.updateLivePreview = function() {
+  const code = $("htmlCode").value;
+  const preview = $("htmlPreview").contentWindow.document;
+  preview.open();
+  preview.write(code);
+  preview.close();
+};
+window.downloadLiveHtml = function() {
+  const code = $("htmlCode").value;
+  downloadBlob(new Blob([code], {type:"text/html"}), "andtools-project.html");
+  toast("✓ HTML File Downloaded");
+};
+window.openHtmlFullscreen = function() {
+  $("fsOverlay").classList.add("open");
+  setPreviewMode('desktop');
+  const code = $("htmlCode").value;
+  const doc = $("fsIframe").contentWindow.document;
+  doc.open(); doc.write(code); doc.close();
+};
+window.closeHtmlFullscreen = function() {
+  $("fsOverlay").classList.remove("open");
+};
+window.setPreviewMode = function(mode) {
+  $("fsIframe").style.width = mode === 'mobile' ? '375px' : '100%';
+};
+
+function aiToolUI(name){
+  if(name==="AI Text Detector") return `<div class="field"><label>Text to analyze</label><textarea id="aiText" placeholder="Paste text here…"></textarea></div><div class="actions"><button class="primary" onclick="analyzeAIText()">Analyze Text</button><button class="secondary" onclick="clearAITool()">Clear</button></div><div id="aiResult"></div><p class="muted ai-note" style="font-size:12px;margin-top:12px">AI-writing detection is probabilistic. This local checker looks for stylistic signals; it cannot prove whether a person or AI wrote a text.</p>`;
+  if(name==="Natural Style Rewriter") return `<div class="field"><label>Text to rewrite</label><textarea id="humanText" placeholder="Paste text here…"></textarea></div><div class="two"><div class="field"><label>Tone</label><select id="humanTone"><option>Natural</option><option>Professional</option><option>Friendly</option><option>Concise</option></select></div><div class="field"><label>Variation</label><select id="humanVariation"><option value="balanced">Balanced</option><option value="light">Light</option><option value="strong">Strong</option></select></div></div><div class="actions"><button class="primary" onclick="humanizeText()">Rewrite Naturally</button><button class="secondary" onclick="copyAIResult()">Copy Result</button></div><div id="humanResult"></div><p class="muted ai-note" style="font-size:12px;margin-top:12px">Local style rewriting only. It does not guarantee that text will evade an AI detector.</p>`;
+  if(name==="AI Image Signal Checker") return `<div class="drop glass"><input id="aiImageFile" type="file" accept="image/*"><b>Choose an image</b><div id="aiImageInfo" style="margin-top:8px;font-weight:700;color:var(--accent)"></div></div><div class="actions"><button class="primary" onclick="analyzeAIImage()">Check Image Signals</button></div><div id="aiImageResult"></div>`;
+  if(name==="AI Video Signal Checker") return `<div class="drop glass"><input id="aiVideoFile" type="file" accept="video/*"><b>Choose a video</b><div id="aiVideoInfo" style="margin-top:8px;font-weight:700;color:var(--accent)"></div></div><div class="actions"><button class="primary" onclick="analyzeAIVideo()">Check Video Signals</button></div><div id="aiVideoResult"></div>`;
+  if(name==="AI Document Detector") return `<div class="drop glass"><input id="aiDocFile" type="file" accept=".txt,.md,.docx,.pdf,text/plain,text/markdown,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"><b>Choose TXT, MD, DOCX or PDF</b><div id="aiDocInfo" style="margin-top:8px;font-weight:700;color:var(--accent)"></div></div><div class="actions"><button class="primary" onclick="analyzeAIDocument()">Analyze Document</button></div><div id="aiDocResult"></div>`;
+  if(name==="AI PPT Detector") return `<div class="drop glass"><input id="aiPptFile" type="file" accept=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation"><b>Choose a PPTX file</b><div id="aiPptInfo" style="margin-top:8px;font-weight:700;color:var(--accent)"></div></div><div class="actions"><button class="primary" onclick="analyzeAIPPT()">Analyze Presentation</button></div><div id="aiPptResult"></div>`;
+  if(name==="AI File Analyzer") return `<div class="drop glass"><input id="aiAnyFile" type="file" accept=".txt,.md,.docx,.pdf,.pptx,image/*,video/*"><b>Choose a supported file</b><div id="aiAnyInfo" style="margin-top:8px;font-weight:700;color:var(--accent)"></div></div><div class="actions"><button class="primary" onclick="analyzeAIFile()">Analyze File</button></div><div id="aiAnyResult"></div>`;
+  if(name==="Image Metadata Cleaner") return `${fileBox(false,"image/*")}<div class="actions"><button class="primary" onclick="cleanImageMetadata()">Create Clean Image Copy</button></div><div id="fileResult"></div><p class="muted ai-note" style="font-size:12px;margin-top:12px">Privacy tool: re-encodes the image to remove common embedded metadata. It is not an AI-detector bypass.</p>`;
+  if(name==="Video Metadata Viewer") return `<div class="drop glass"><input id="videoMetaFile" type="file" accept="video/*"><b>Choose a video</b><div id="videoMetaInfo" style="margin-top:8px;font-weight:700;color:var(--accent)"></div></div><div class="actions"><button class="primary" onclick="viewVideoMetadata()">View Metadata</button></div><div id="videoMetaResult"></div>`;
+  return `<div class="result glass">Choose an AI tool.</div>`;
+}
+
+function aiTextScore(text){
+  const clean=(text||'').replace(/\s+/g,' ').trim();
+  if(!clean)return {score:0,signals:[],confidence:'Low',words:0,sentences:0};
+  const words=clean.split(/\s+/), sentences=clean.split(/[.!?]+/).map(x=>x.trim()).filter(Boolean);
+  const lens=sentences.map(x=>x.split(/\s+/).length), mean=lens.reduce((a,b)=>a+b,0)/Math.max(1,lens.length);
+  const burst=Math.sqrt(lens.reduce((a,b)=>a+(b-mean)**2,0)/Math.max(1,lens.length));
+  const lower=clean.toLowerCase();
+  const phrases=['furthermore','moreover','in conclusion','it is important to note','additionally','overall','delve into','plays a crucial role','in today’s world','comprehensive','seamlessly','robust'];
+  const hits=phrases.filter(p=>lower.includes(p)), repeated=(lower.match(/\b(however|therefore|additionally|overall|moreover|furthermore)\b/g)||[]).length;
+  let score=0,signals=[];
+  if(words.length>=80)score+=8; else if(words.length>=40)score+=4;
+  if(mean>=22){score+=12;signals.push('Long average sentence length');}
+  if(burst<5 && sentences.length>=5){score+=16;signals.push('Low sentence-length variation');}
+  if(hits.length){score+=Math.min(30,hits.length*6);signals.push('Formulaic/formal phrasing: '+hits.join(', '));}
+  if(repeated>=3){score+=12;signals.push('Repeated transition words');}
+  const unique=new Set(words.map(w=>w.toLowerCase().replace(/[^a-z']/g,''))).size;
+  if(words.length>100 && unique/words.length<0.42){score+=12;signals.push('Relatively low lexical variation');}
+  const punct=(clean.match(/[,;:]/g)||[]).length;
+  if(words.length>120 && punct/words.length>0.07){score+=8;signals.push('Dense punctuation pattern');}
+  score=Math.min(100,Math.round(score));
+  return {score,signals,confidence:words.length<80?'Low':words.length<200?'Medium':'Higher',words:words.length,sentences:sentences.length,avg:mean.toFixed(1),burst:burst.toFixed(1)};
+}
+function renderAIScore(target,r){const label=r.score>=65?'Higher AI-like signal':r.score>=40?'Mixed / uncertain':'Lower AI-like signal';target.innerHTML=`<div class="result glass"><h3 style="margin:0 0 8px">${label}</h3><p class="ai-score">${r.score}/100</p><p class="muted">Words: ${r.words||0} · Sentences: ${r.sentences||0} · Confidence: ${r.confidence}</p>${r.signals.length?`<ul>${r.signals.map(esc).map(x=>`<li>${x}</li>`).join('')}</ul>`:'<p>No strong signals were found by this local heuristic.</p>'}</div>`;}
+function analyzeAIText(){renderAIScore($('aiResult'),aiTextScore($('aiText')?.value||''));}
+function humanizeText(){let t=($('humanText')?.value||'').trim();if(!t)return toast('Paste text first');const tone=$('humanTone')?.value||'Natural',variation=$('humanVariation')?.value||'balanced';[[/\bfurthermore\b/gi,'also'],[/\bmoreover\b/gi,'also'],[/\bin conclusion\b/gi,'to sum up'],[/\bit is important to note that\b/gi,''],[/\badditionally\b/gi,'also'],[/\bin today[’\']s world\b/gi,'today'],[/\bplays a crucial role\b/gi,'matters a lot'],[/\bdelve into\b/gi,'look at'],[/\butilize\b/gi,'use'],[/\bapproximately\b/gi,'about'],[/\bcommence\b/gi,'start'],[/\bprior to\b/gi,'before'],[/\bin order to\b/gi,'to'],[/\ba plethora of\b/gi,'many']].forEach(([re,v])=>t=t.replace(re,v));t=t.replace(/\s+,/g,',').replace(/\s{2,}/g,' ').replace(/\n{3,}/g,'\n\n').trim();if(variation==='strong')t=t.replace(/; /g,'. ').replace(/: /g,'. ');if(tone==='Friendly')t=t.replace(/\bIt is\b/g,'It’s').replace(/\bWe are\b/g,"We're").replace(/\bdo not\b/gi,"don't");if(tone==='Concise')t=t.replace(/\bvery\s+/gi,'').replace(/\breally\s+/gi,'');$('humanResult').innerHTML=`<div class="field"><label>Rewritten text</label><textarea id="humanOutput" style="min-height:220px">${esc(t)}</textarea></div><div class="result glass"><b>Style pass complete.</b><br><span class="muted">Wording was adjusted locally for variety and readability; no claim is made that it will bypass an AI detector.</span></div>`;}
+function copyAIResult(){const v=$('humanOutput')?.value;if(!v)return toast('Generate a result first');copyText(v);toast('✓ Result copied');}
+function clearAITool(){['aiText','humanText'].forEach(id=>{if($(id))$(id).value=''});['aiResult','humanResult'].forEach(id=>{if($(id))$(id).innerHTML=''})}
+function blobTextSlice(f,max=2000000){return f.slice(0,Math.min(max,f.size)).arrayBuffer().then(b=>new TextDecoder('latin1').decode(b));}
+function mediaMarkers(text){const names=['stable diffusion','midjourney','dall-e','dall·e','firefly','comfyui','automatic1111','novelai','runway','sora','pika','kling','leonardo ai','adobe firefly','generated by ai','generative ai'];const low=text.toLowerCase();return names.filter(x=>low.includes(x));}
+function basicFileInfo(f){return `<p><b>${esc(f.name)}</b></p><p>Type: ${esc(f.type||'Unknown')} · Size: ${(f.size/1024/1024).toFixed(2)} MB · Modified: ${new Date(f.lastModified).toLocaleString()}</p>`;}
+async function analyzeAIImage(){const f=$('aiImageFile')?.files?.[0];if(!f)return toast('Choose an image');const markers=mediaMarkers(await blobTextSlice(f));const img=new Image();img.onload=()=>{$('aiImageResult').innerHTML=`<div class="result glass">${basicFileInfo(f)}<p>Dimensions: ${img.naturalWidth} × ${img.naturalHeight}</p><p><b>Embedded generator markers:</b> ${markers.length?markers.map(esc).join(', '):'None detected'}</p><p>${markers.length?'Possible AI-generation metadata/signals were found.':'No common generator marker was found. This does not prove the image is human-made.'}</p></div>`;URL.revokeObjectURL(img.src)};img.src=URL.createObjectURL(f);}
+async function analyzeAIVideo(){const f=$('aiVideoFile')?.files?.[0];if(!f)return toast('Choose a video');const markers=mediaMarkers(await blobTextSlice(f,4000000));$('aiVideoResult').innerHTML=`<div class="result glass">${basicFileInfo(f)}<p><b>Generator/encoder markers:</b> ${markers.length?markers.map(esc).join(', '):'None detected'}</p><p>Browser-side metadata checks cannot determine authorship reliably.</p></div>`;}
+async function extractDocText(f){const ext=f.name.toLowerCase().split('.').pop();if(ext==='txt'||ext==='md')return await f.text();if(ext==='docx'){const r=await mammoth.extractRawText({arrayBuffer:await f.arrayBuffer()});return r.value;}if(ext==='pdf'){const pdf=await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise;let out='';for(let i=1;i<=pdf.numPages;i++){const pg=await pdf.getPage(i);const tc=await pg.getTextContent();out+=tc.items.map(x=>x.str).join(' ')+'\n';}return out;}throw new Error('Unsupported document');}
+async function analyzeAIDocument(){const f=$('aiDocFile')?.files?.[0];if(!f)return toast('Choose a document');try{const r=aiTextScore(await extractDocText(f));$('aiDocResult').innerHTML=basicFileInfo(f);const box=document.createElement('div');$('aiDocResult').appendChild(box);renderAIScore(box,r);}catch(e){$('aiDocResult').innerHTML='<div class="result glass">Could not read this document in the browser.</div>';}}
+async function analyzeAIPPT(){const f=$('aiPptFile')?.files?.[0];if(!f)return toast('Choose a PPTX file');try{const zip=await JSZip.loadAsync(await f.arrayBuffer());let text='',count=0;for(const n of Object.keys(zip.files).filter(n=>/^ppt\/slides\/slide\d+\.xml$/i.test(n))){text+=' '+await zip.files[n].async('text');count++;}const r=aiTextScore(text.replace(/<[^>]+>/g,' '));$('aiPptResult').innerHTML=basicFileInfo(f)+`<p>Slides scanned: ${count}</p>`;const box=document.createElement('div');$('aiPptResult').appendChild(box);renderAIScore(box,r);}catch(e){$('aiPptResult').innerHTML='<div class="result glass">Could not read this PPTX file.</div>';}}
+async function analyzeAIFile(){const f=$('aiAnyFile')?.files?.[0];if(!f)return toast('Choose a file');const ext=f.name.toLowerCase().split('.').pop();if(f.type.startsWith('image/')||['jpg','jpeg','png','webp','gif','bmp'].includes(ext)){const m=mediaMarkers(await blobTextSlice(f));$('aiAnyResult').innerHTML=`<div class="result glass">${basicFileInfo(f)}<p>Type: Image</p><p>Generator markers: ${m.length?m.map(esc).join(', '):'None detected'}</p></div>`;return;}if(f.type.startsWith('video/')||['mp4','mov','webm','mkv','avi'].includes(ext)){const m=mediaMarkers(await blobTextSlice(f,4000000));$('aiAnyResult').innerHTML=`<div class="result glass">${basicFileInfo(f)}<p>Type: Video</p><p>Generator/encoder markers: ${m.length?m.map(esc).join(', '):'None detected'}</p></div>`;return;}if(['txt','md','docx','pdf'].includes(ext)){try{const r=aiTextScore(await extractDocText(f));$('aiAnyResult').innerHTML=basicFileInfo(f);const box=document.createElement('div');$('aiAnyResult').appendChild(box);renderAIScore(box,r);}catch(e){toast('Could not read document');}return;}if(ext==='pptx'){try{const zip=await JSZip.loadAsync(await f.arrayBuffer());let text='',count=0;for(const n of Object.keys(zip.files).filter(n=>/^ppt\/slides\/slide\d+\.xml$/i.test(n))){text+=' '+await zip.files[n].async('text');count++;}const r=aiTextScore(text.replace(/<[^>]+>/g,' '));$('aiAnyResult').innerHTML=basicFileInfo(f)+`<p>Type: PPTX · Slides: ${count}</p>`;const box=document.createElement('div');$('aiAnyResult').appendChild(box);renderAIScore(box,r);}catch(e){toast('Could not read PPTX');}return;}$('aiAnyResult').innerHTML='<div class="result glass">This file type is not supported by the local analyzer yet.</div>';}
+async function cleanImageMetadata(){const f=$('fileInput')?.files?.[0];if(!f)return toast('Choose an image');try{const im=await loadImage(f),c=document.createElement('canvas');c.width=im.naturalWidth||im.width;c.height=im.naturalHeight||im.height;c.getContext('2d').drawImage(im,0,0);const mime=f.type==='image/png'?'image/png':'image/jpeg';c.toBlob(b=>{if(!b)return toast('Could not create clean image');downloadBlob(b,`${f.name.replace(/\.[^.]+$/,'')}-clean.${mime==='image/png'?'png':'jpg'}`);$('fileResult').innerHTML='<div class="result glass">✓ Clean image created. Common metadata is removed by re-encoding.</div>';},mime,0.95);}catch(e){toast('Could not process image');}}
+async function viewVideoMetadata(){const f=$('videoMetaFile')?.files?.[0];if(!f)return toast('Choose a video');const m=mediaMarkers(await blobTextSlice(f,4000000));$('videoMetaResult').innerHTML=`<div class="result glass">${basicFileInfo(f)}<p>Generator/encoder markers: ${m.length?m.map(esc).join(', '):'None detected'}</p><p class="muted">Browser access to container-level video metadata varies by format.</p></div>`;}
+
+function imageUI(name){
+  return `${fileBox(false,"image/*")}
+  ${name.includes("Resizer")||name==="Photo Size Converter"?`<div class="two"><div class="field"><label>Width (px)</label><input id="imgW" type="number" value="1080"></div><div class="field"><label>Height (px - or leave auto)</label><input id="imgH" placeholder="auto"></div></div>`:""}
+  ${name==="Image Compressor"?`<div class="field"><label>Quality: <span id="qv">0.8</span></label><input id="quality" type="range" min="0.1" max="1" step="0.05" value="0.8" oninput="$('qv').textContent=this.value"></div>`:""}
+  ${name==="Image Cropper"?`<div class="two"><div class="field"><label>X start</label><input id="cx" type="number" value="0"></div><div class="field"><label>Y start</label><input id="cy" type="number" value="0"></div><div class="field"><label>Crop Width</label><input id="cw" type="number" value="500"></div><div class="field"><label>Crop Height</label><input id="ch" type="number" value="500"></div></div>`:""}
+  ${name==="Image Rotator"?`<div class="field"><label>Angle</label><select id="angle"><option value="90">90° Clockwise</option><option value="180">180°</option><option value="270">270° (Counter-Clockwise)</option></select></div>`:""}
+  ${name==="Image Flipper"?`<div class="field"><label>Direction</label><select id="flip"><option value="h">Horizontal (Mirror)</option><option value="v">Vertical</option></select></div>`:""}
+  ${name==="DPI Changer"?`<div class="field"><label>Target DPI note</label><input id="dpi" type="number" value="300"></div>`:""}
+  <div class="actions"><button class="primary" onclick="processImage('${esc(name)}')">Process & Download Result</button></div>
+  <div id="fileResult"></div>`;
+}
+
+async function loadImage(file){
+  return new Promise((res,rej)=>{
+    const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=URL.createObjectURL(file);
+  });
+}
+
+async function processImage(name){
+  const f=$("fileInput")?.files?.[0];
+  if(!f){toast("Please select an image file first");return}
+  try{
+    if(name==="Image Metadata Viewer"){
+      $("fileResult").innerHTML=`<div class="result glass"><b>File Name:</b> ${esc(f.name)}\n<b>Size:</b> ${(f.size/1024).toFixed(2)} KB\n<b>Type:</b> ${f.type}\n<b>Last Modified:</b> ${new Date(f.lastModified).toLocaleString()}</div>`;
+      return;
+    }
+    const im=await loadImage(f),c=document.createElement("canvas");
+    let w=im.naturalWidth,h=im.naturalHeight;
+    if(name.includes("Resizer")||name==="Photo Size Converter"){
+      w=+$("imgW").value||w;
+      h=$("imgH").value&&$("imgH").value!=="auto"?+$("imgH").value:Math.round(im.naturalHeight*w/im.naturalWidth);
+    }
+    if(name==="Image Cropper"){
+      const x=+$("cx").value||0,y=+$("cy").value||0;
+      w=+$("cw").value||w;h=+$("ch").value||h;
+      c.width=w;c.height=h;
+      c.getContext("2d").drawImage(im,x,y,w,h,0,0,w,h);
+    }else{
+      const is90or270=name==="Image Rotator"&&+$("angle").value%180!==0;
+      c.width=is90or270?h:w;
+      c.height=is90or270?w:h;
+      const ctx=c.getContext("2d");
+      ctx.save();
+      if(name==="Image Rotator"){
+        const a=+$("angle").value*Math.PI/180;
+        ctx.translate(c.width/2,c.height/2);
+        ctx.rotate(a);
+        ctx.drawImage(im,-w/2,-h/2,w,h);
+      }else if(name==="Image Flipper"){
+        const fh=$("flip").value==="h",fv=$("flip").value==="v";
+        ctx.translate(fh?w:0,fv?h:0);
+        ctx.scale(fh?-1:1,fv?-1:1);
+        ctx.drawImage(im,0,0,w,h);
+      }else{
+        ctx.drawImage(im,0,0,w,h);
+      }
+      ctx.restore();
+    }
+    let mime="image/png";
+    if(name==="Image Compressor")mime="image/jpeg";
+    const q=name==="Image Compressor"?+$("quality").value:0.92;
+    const ext=mime.split("/")[1];
+    c.toBlob(b=>{
+      downloadBlob(b,`${f.name.replace(/\.[^.]+$/,"")}-andtools.${ext}`);
+      $("fileResult").innerHTML=`<div class="result glass">✓ Download started: ${c.width}×${c.height}px (${ext.toUpperCase()})</div>`;
+    },mime,q);
+  }catch(e){console.error(e);toast("Could not process image file")}
+}
+
+async function imagesToPdf(){
+  const fs=[...$("fileInput").files];
+  if(!fs.length){toast("Choose at least one image");return}
+  const {jsPDF}=window.jspdf;
+  const pdf=new jsPDF();
+  for(let n=0;n<fs.length;n++){
+    const im=await loadImage(fs[n]);
+    if(n)pdf.addPage();
+    const maxW=190,maxH=277,s=Math.min(maxW/im.width,maxH/im.height);
+    pdf.addImage(im,"JPEG",(210-im.width*s)/2,(297-im.height*s)/2,im.width*s,im.height*s);
+  }
+  pdf.save("andtools-images.pdf");
+  $("fileResult").innerHTML=`<div class="result glass">✓ Downloaded PDF with ${fs.length} pages.</div>`;
+  toast("✓ PDF created & downloaded");
+}
+
+function passport(){
+  const f=$("fileInput").files[0];if(!f)return toast("Choose a photo");
+  loadImage(f).then(im=>{
+    const c=document.createElement("canvas"),scale=10,w=35*scale,h=45*scale,cols=+$("ppCols").value||4,rows=+$("ppRows").value||6;
+    c.width=cols*w;c.height=rows*h;
+    const x=c.getContext("2d");
+    x.fillStyle="#ffffff";x.fillRect(0,0,c.width,c.height);
+    for(let yy=0;yy<rows;yy++){
+      for(let xx=0;xx<cols;xx++){
+        x.drawImage(im,xx*w+5,yy*h+5,w-10,h-10);
+        x.strokeStyle="#ddd";x.strokeRect(xx*w,yy*h,w,h);
+      }
+    }
+    c.toBlob(b=>{
+      downloadBlob(b,"passport-photo-sheet.png");
+      $("fileResult").innerHTML=`<div class="result glass">✓ Passport photo sheet generated and downloaded!</div>`;
+    });
+  });
+}
+
+function collage(){
+  const fs=[...$("fileInput").files];if(!fs.length)return toast("Choose images");
+  Promise.all(fs.slice(0,6).map(loadImage)).then(ims=>{
+    const cols=+$("collageCols").value||2,cell=500,rows=Math.ceil(ims.length/cols),c=document.createElement("canvas");
+    c.width=cols*cell;c.height=rows*cell;
+    const x=c.getContext("2d");x.fillStyle="#121923";x.fillRect(0,0,c.width,c.height);
+    ims.forEach((im,i)=>{
+      const r=Math.floor(i/cols),cl=i%cols,s=Math.min(cell/im.width,cell/im.height),w=im.width*s,h=im.height*s;
+      x.drawImage(im,cl*cell+(cell-w)/2,r*cell+(cell-h)/2,w,h);
+    });
+    c.toBlob(b=>{
+      downloadBlob(b,"andtools-collage.png");
+      $("fileResult").innerHTML=`<div class="result glass">✓ Collage created and downloaded.</div>`;
+    });
+  });
+}
+
+function pdfUI(name){
+  return `${fileBox(name==="PDF Merger","application/pdf,image/*")}
+  ${["PDF Splitter","PDF Page Extractor","PDF Page Deleter","PDF Page Reorder"].includes(name)?`<div class="field"><label>Page numbers (e.g. 1, 3-5, 8)</label><input id="pages" placeholder="1, 3-5"></div>`:""}
+  ${name==="PDF Rotator"?`<div class="field"><label>Angle</label><select id="pdfAngle"><option value="90">90° Clockwise</option><option value="180">180°</option><option value="270">270°</option></select></div>`:""}
+  ${name==="PDF Watermark"?`<div class="field"><label>Watermark text (fills entire page diagonally)</label><input id="wm" value="CONFIDENTIAL"></div>`:""}
+  ${name==="PDF Page Numbering"?`<div class="field"><label>Prefix</label><input id="prefix" value="Page "></div>`:""}
+  <div class="actions"><button class="primary" onclick="processPdf('${esc(name)}')">Process & Download</button></div>
+  <div id="fileResult"></div>`;
+}
+
+function parsePages(s,max){
+  const out=[];
+  for(const p of (s||"").split(",").map(x=>x.trim()).filter(Boolean)){
+    if(p.includes("-")){
+      let[a,b]=p.split("-").map(Number);
+      if(a>b)[a,b]=[b,a];
+      for(let i=a;i<=b;i++)if(i>=1&&i<=max)out.push(i-1);
+    }else{
+      const n=+p;if(n>=1&&n<=max)out.push(n-1);
+    }
+  }
+  return [...new Set(out)];
+}
+
+async function processPdf(name){
+  const fs=[...$("fileInput").files];
+  if(!fs.length)return toast("Please choose a file first");
+  try{
+    if(name==="JPG to PDF"||name==="PNG to PDF"){
+      const {jsPDF}=window.jspdf;
+      const pdf=new jsPDF();
+      const im=await loadImage(fs[0]);
+      const maxW=190,maxH=277,s=Math.min(maxW/im.width,maxH/im.height);
+      pdf.addImage(im,name.includes("PNG")?"PNG":"JPEG",(210-im.width*s)/2,(297-im.height*s)/2,im.width*s,im.height*s);
+      pdf.save(`${fs[0].name.replace(/\.[^.]+$/,"")}.pdf`);
+      $("fileResult").innerHTML=`<div class="result glass">✓ PDF created and downloaded successfully!</div>`;
+      return;
+    }
+    if(name==="PDF to JPG" || name==="PDF to PNG") {
+      const ab = await fs[0].arrayBuffer();
+      const pdf = await window.pdfjsLib.getDocument({data: ab}).promise;
+      const zip = new JSZip();
+      const mime = name==="PDF to JPG" ? "image/jpeg" : "image/png";
+      const ext = name==="PDF to JPG" ? "jpg" : "png";
+      for(let i=1; i<=pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const viewport = page.getViewport({scale: 1.5});
+        const canvas = document.createElement("canvas");
+        canvas.width = viewport.width; canvas.height = viewport.height;
+        await page.render({canvasContext: canvas.getContext("2d"), viewport}).promise;
+        const dataUrl = canvas.toDataURL(mime, 0.9);
+        const base64Data = dataUrl.replace(/^data:image\/(png|jpeg);base64,/, "");
+        zip.file(`page-${i}.${ext}`, base64Data, {base64: true});
+      }
+      const content = await zip.generateAsync({type: "blob"});
+      downloadBlob(content, `${fs[0].name.replace(/\.[^.]+$/,"")}-images.zip`);
+      $("fileResult").innerHTML=`<div class="result glass">✓ Extracted all pages as .${ext} inside a ZIP archive!</div>`;
+      toast(`✓ PDF converted to ${ext.toUpperCase()} successfully`);
+      return;
+    }
+    if(name==="PDF Text Extractor"){
+      const ab=await fs[0].arrayBuffer();
+      const pdf=await window.pdfjsLib.getDocument({data:ab}).promise;
+      let fullText="";
+      for(let i=1;i<=pdf.numPages;i++){
+        const page=await pdf.getPage(i);
+        const tc=await page.getTextContent();
+        fullText+=`--- Page ${i} ---\n`+tc.items.map(it=>it.str).join(" ")+"\n\n";
+      }
+      downloadBlob(new Blob([fullText],{type:"text/plain"}),`${fs[0].name.replace(/\.[^.]+$/,"")}-text.txt`);
+      $("fileResult").innerHTML=`<div class="result glass"><b>Extracted Text:</b>\n\n${esc(fullText.slice(0,1000))}...</div>`;
+      toast("✓ Text extracted & downloaded as .txt");
+      return;
+    }
+
+    const {PDFDocument,rgb,degrees}=PDFLib;
+    if(name==="PDF Merger"){
+      const out=await PDFDocument.create();
+      for(const f of fs){
+        const src=await PDFDocument.load(await f.arrayBuffer());
+        const pages=await out.copyPages(src,src.getPageIndices());
+        pages.forEach(p=>out.addPage(p));
+      }
+      return savePdf(await out.save(),"merged.pdf");
+    }
+
+    const src=await PDFDocument.load(await fs[0].arrayBuffer());
+    if(name==="PDF Metadata Viewer"){
+      const info=[["Title",src.getTitle()],["Author",src.getAuthor()],["Subject",src.getSubject()],["Creator",src.getCreator()],["Producer",src.getProducer()]];
+      $("fileResult").innerHTML=`<div class="result glass">${info.map(x=>`<b>${x[0]}:</b> ${esc(x[1]||"—")}`).join("\n")}</div>`;
+      return;
+    }
+
+    const out=await PDFDocument.create();
+    let inds=src.getPageIndices();
+    if(["PDF Splitter","PDF Page Extractor","PDF Page Deleter","PDF Page Reorder"].includes(name)){
+      const chosen=parsePages($("pages").value,inds.length);
+      if(name==="PDF Page Deleter")inds=inds.filter(i=>!chosen.includes(i));
+      else inds=chosen.length?chosen:inds;
+    }
+    const copied=await out.copyPages(src,inds);
+    copied.forEach(p=>out.addPage(p));
+
+    if(name==="PDF Rotator"){
+      const a=+$("pdfAngle").value||90;
+      out.getPages().forEach(p=>p.setRotation(degrees((p.getRotation().angle+a)%360)));
+    }
+    if(name==="PDF Watermark"){
+      out.getPages().forEach(p=>{
+        const {width,height}=p.getSize();
+        const text = $("wm").value||"CONFIDENTIAL";
+        const diag = Math.sqrt(width*width + height*height);
+        const textSize = (diag / text.length) * 1.2; 
+        const angle = Math.atan(height/width) * (180/Math.PI);
+        p.drawText(text,{
+          x: width * 0.06 - (text.length * textSize * 0.12),
+          y: height * 0.28,
+          size: textSize,
+          color:rgb(0.5,0.5,0.5),
+          rotate:degrees(angle),
+          opacity:0.25
+        });
+      });
+    }
+    if(name==="PDF Page Numbering"){
+      out.getPages().forEach((p,i)=>{
+        const {width}=p.getSize();
+        p.drawText(($("prefix").value||"Page ")+(i+1),{x:width-90,y:20,size:10,color:rgb(0.3,0.3,0.3)});
+      });
+    }
+    if(name==="PDF Metadata Remover"){
+      out.setTitle("");out.setAuthor("");out.setSubject("");out.setKeywords([]);out.setCreator("");out.setProducer("");
+    }
+    savePdf(await out.save(),`${fs[0].name.replace(/\.[^.]+$/,"")}-processed.pdf`);
+  }catch(e){
+    console.error(e);
+    toast("Error processing PDF. Make sure the file is not password-protected.");
+  }
+}
+function savePdf(bytes,name){
+  downloadBlob(new Blob([bytes],{type:"application/pdf"}),name);
+  $("fileResult").innerHTML=`<div class="result glass">✓ PDF processed and downloaded: <b>${name}</b></div>`;
+  toast("✓ PDF downloaded");
+}
+
+function docUI(name){
+  if(name==="TXT to DOCX") return `${fileBox(false,"text/plain,.txt")}<div class="field" style="margin-top:10px"><label>Or type text here</label><textarea id="docText" placeholder="Text for DOCX..."></textarea></div><div class="actions"><button class="primary" onclick="txtDocx()">Generate & Download DOCX</button></div><div id="fileResult"></div>`;
+  if(name==="DOCX to HTML") return `${fileBox(false,".docx")}<div class="actions"><button class="primary" onclick="docxHtml()">Convert & Download HTML</button></div><div id="fileResult"></div>`;
+  if(name==="CSV to XLSX"||name==="XLSX to CSV") return `${fileBox(false,name==="CSV to XLSX"?".csv,text/csv":".xlsx")}<div class="actions"><button class="primary" onclick="sheetConvert('${name}')">Convert & Download Result</button></div><div id="fileResult"></div>`;
+  return `${fileBox(false,"*")}<div class="field" style="margin-top:10px"><label>${name==="Markdown to HTML"?"Markdown Content":name==="HTML to PDF"?"HTML Content":name==="CSV to PDF"?"CSV Content":"Plain text"}</label><textarea id="docText" placeholder="Paste or type content here…"></textarea></div><div class="actions"><button class="primary" onclick="docConvert('${esc(name)}')">Convert & Download</button></div><div id="fileResult"></div>`;
+}
+
+async function txtDocx(){
+  let text = $("docText")?.value || "";
+  const f = $("fileInput")?.files?.[0];
+  if(f) text = await f.text();
+  if(!text.trim()) return toast("Please enter text or choose a text file");
+  const zip = new JSZip();
+  zip.file("[Content_Types].xml", `<?xml version="1.0"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`);
+  zip.file("_rels/.rels", `<?xml version="1.0"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`);
+  zip.file("word/_rels/document.xml.rels", `<?xml version="1.0"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>`);
+  const ps = text.split(/\r?\n/).map(x=>`<w:p><w:r><w:t xml:space="preserve">${escXml(x)}</w:t></w:r></w:p>`).join("");
+  zip.file("word/document.xml", `<?xml version="1.0"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${ps}<w:sectPr/></w:body></w:document>`);
+  const blob = await zip.generateAsync({type:"blob"});
+  downloadBlob(blob, "andtools-document.docx");
+  $("fileResult").innerHTML=`<div class="result glass">✓ Generated and downloaded DOCX document.</div>`;
+}
+function escXml(s){return String(s).replace(/[<>&'"]/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;","'":"&apos;",'"':"&quot;"}[c]))}
+
+async function docxHtml(){
+  const f=$("fileInput")[0];if(!f)return toast("Choose a .docx file");
+  const r=await mammoth.convertToHtml({arrayBuffer:await f.arrayBuffer()});
+  const fullHtml=`<!doctype html>\n<html>\n<head><meta charset="utf-8"><title>${esc(f.name)}</title><style>body{font-family:sans-serif;line-height:1.6;padding:20px;max-width:800px;margin:auto}</style></head>\n<body>\n${r.value}\n</body>\n</html>`;
+  $("fileResult").innerHTML=`<div class="result glass">${esc(r.value.slice(0,500))}...</div>`;
+  downloadBlob(new Blob([fullHtml],{type:"text/html"}),`${f.name.replace(/\.[^.]+$/,"")}.html`);
+  toast("✓ Converted & downloaded HTML");
+}
+
+async function docConvert(name){
+  let text=$("docText")?.value||"";
+  const f=$("fileInput")?.files?.[0];
+  if(f && !text) text = await f.text();
+  if(!text.trim()) return toast("Please enter content or upload a file");
+
+  if(name==="TXT to PDF"){
+    const {jsPDF}=window.jspdf,p=new jsPDF();
+    const lines=p.splitTextToSize(text,180);
+    p.text(lines,15,18);
+    p.save("andtools-text.pdf");
+  }else if(name==="Markdown to HTML"){
+    const html=md(text);
+    const doc=`<!doctype html><html><head><meta charset="utf-8"><title>Markdown Document</title><style>body{font-family:system-ui,sans-serif;padding:30px;line-height:1.6;max-width:800px;margin:auto}</style></head><body>${html}</body></html>`;
+    downloadBlob(new Blob([doc],{type:"text/html"}),"andtools-markdown.html");
+  }else if(name==="HTML to Markdown"){
+    let mdText = text.replace(/<h1>(.*?)<\/h1>/gi, "# $1\n").replace(/<h2>(.*?)<\/h2>/gi, "## $1\n").replace(/<h3>(.*?)<\/h3>/gi, "### $1\n").replace(/<strong>(.*?)<\/strong>/gi, "**$1**").replace(/<b>(.*?)<\/b>/gi, "**$1**").replace(/<em>(.*?)<\/em>/gi, "*$1*").replace(/<p>(.*?)<\/p>/gi, "$1\n\n").replace(/<br\s*[\/]?>/gi, "\n");
+    downloadBlob(new Blob([mdText],{type:"text/markdown"}),"andtools-converted.md");
+  }else if(name==="TXT to HTML"){
+    let htmlText = text.split(/\r?\n\r?\n/).map(p=>`<p>${esc(p)}</p>`).join("\n");
+    const doc=`<!doctype html><html><head><meta charset="utf-8"><title>Converted Text</title></head><body>${htmlText}</body></html>`;
+    downloadBlob(new Blob([doc],{type:"text/html"}),"andtools-text.html");
+  }else if(name==="HTML to PDF"){
+    const {jsPDF}=window.jspdf,p=new jsPDF();
+    p.html(text,{callback:doc=>doc.save("andtools-html.pdf"),x:10,y:10,width:190,windowWidth:800});
+  }else if(name==="CSV to PDF"){
+    const {jsPDF}=window.jspdf,p=new jsPDF();
+    const rows=text.trim().split(/\r?\n/).map(r=>r.split(","));
+    let y=18;
+    rows.forEach(r=>{
+      p.text(r.join(" | ").slice(0,95),15,y);
+      y+=8;
+      if(y>280){p.addPage();y=18}
+    });
+    p.save("andtools-table.pdf");
+  }
+  $("fileResult").innerHTML=`<div class="result glass">✓ File converted and download initiated!</div>`;
+}
+
+function md(s){return esc(s).replace(/^### (.*)$/gm,"<h3>$1</h3>").replace(/^## (.*)$/gm,"<h2>$1</h2>").replace(/^# (.*)$/gm,"<h1>$1</h1>").replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\*(.*?)\*/g,"<em>$1</em>").replace(/\n/g,"<br>")}
+
+function sheetConvert(name){
+  const f=$("fileInput")[0];if(!f)return toast("Choose a spreadsheet/CSV file");
+  if(name==="CSV to XLSX"){
+    f.text().then(s=>{
+      const wb=XLSX.read(s,{type:"string"});
+      XLSX.writeFile(wb,`${f.name.replace(/\.[^.]+$/,"")}.xlsx`);
+      $("fileResult").innerHTML=`<div class="result glass">✓ Converted and downloaded XLSX.</div>`;
+    });
+  }else{
+    const r=new FileReader();
+    r.onload=e=>{
+      const wb=XLSX.read(e.target.result,{type:"array"});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      const csv=XLSX.utils.sheet_to_csv(ws);
+      downloadBlob(new Blob([csv],{type:"text/csv"}),`${f.name.replace(/\.[^.]+$/,"")}.csv`);
+      $("fileResult").innerHTML=`<div class="result glass">✓ Converted and downloaded CSV.</div>`;
+    };
+    r.readAsArrayBuffer(f);
+  }
+}
+
+function qrUI(name){
+  const base=name.replace(" QR","");
+  if(name==="WhatsApp QR") return `<div class="two"><div class="field"><label>Country code (without +)</label><input id="waQrCode" inputmode="numeric" value="91" placeholder="91"></div><div class="field"><label>WhatsApp number</label><input id="waQrPhone" inputmode="tel" placeholder="9876543210"></div></div><div class="field"><label>Optional message</label><textarea id="waQrMsg" placeholder="Hello! (optional)"></textarea></div><div class="actions"><button class="primary" onclick="makeQR('WhatsApp QR')">Generate WhatsApp QR</button></div><div id="qrOut" class="center" style="margin-top:15px"></div>`;
+  return `<div class="field"><label>${base} details</label><textarea id="qrData" placeholder="Enter text, URL or data for QR…"></textarea></div>
+  ${name==="Wi-Fi QR"?`<div class="two"><div class="field"><label>Network Name (SSID)</label><input id="ssid" placeholder="MyWiFi"></div><div class="field"><label>Password</label><input id="wpass" type="password"></div></div>`:""}
+  ${name==="UPI QR"?`<div class="two"><div class="field"><label>UPI ID</label><input id="upi" placeholder="username@bank"></div><div class="field"><label>Payee Name</label><input id="payee" placeholder="Merchant or Name"></div></div>`:""}
+  <div class="actions"><button class="primary" onclick="makeQR('${esc(name)}')">Generate QR Code</button></div>
+  <div id="qrOut" class="center" style="margin-top:15px"></div>`;
+}
+function makeQR(name){
+  let text=$("qrData").value.trim();
+  if(name==="Wi-Fi QR")text=`WIFI:T:WPA;S:${$("ssid").value};P:${$("wpass").value};;`;
+  if(name==="UPI QR"){
+    const u=$("upi").value.trim();if(!u)return toast("Enter your UPI ID");
+    text=`upi://pay?pa=${encodeURIComponent(u)}&pn=${encodeURIComponent($("payee").value||"&tools")}&cu=INR`;
+  }
+  if(name==="WhatsApp QR"){
+    const cc=($('waQrCode')?.value||'').replace(/\D/g,'');
+    const phone=($('waQrPhone')?.value||'').replace(/\D/g,'');
+    if(!cc||!phone)return toast("Enter country code and WhatsApp number");
+    const n=cc+phone;
+    const msg=$('waQrMsg')?.value.trim()||'';
+    text=`https://wa.me/${n}${msg?`?text=${encodeURIComponent(msg)}`:''}`;
+  }
+  if(name==="Phone QR")text=`tel:${text}`;
+  if(name==="Email QR")text=`mailto:${text}`;
+  if(name==="Location QR")text=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(text)}`;
+  if(name==="SMS QR")text=`SMSTO:${text}`;
+  if(!text)return toast("Please enter information to generate QR");
+  $("qrOut").innerHTML='<div id="qr" class="qrbox glass"></div><div class="actions" style="justify-content:center;margin-top:10px"><button class="primary" onclick="downloadQR()">Download QR Image</button></div>';
+  new QRCode($("qr"),{text,width:240,height:240,colorDark:"#000000",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.H});
+}
+function downloadQR(){
+  const img=$("qr")?.querySelector("img");
+  if(img&&img.src){
+    const a=document.createElement("a");a.href=img.src;a.download="andtools-qr.png";a.click();
+  }
+}
+
+function makeWa(){
+  const n=(($("waCode")?.value||"")+($("waPhone")?.value||"")).replace(/\D/g,"");
+  if(!n)return toast("Enter a valid phone number");
+  const msg=$("waMsg")?.value||"";
+  const u=`https://wa.me/${n}${msg?`?text=${encodeURIComponent(msg)}`:""}`;
+  $("waResult").innerHTML=`<div class="result glass">${esc(u)}</div><div class="actions"><button class="primary" onclick="copyText('${u.replace(/'/g,"\\'")}');toast('✓ Link copied')">Copy Link</button><a class="secondary" href="${u}" target="_blank" rel="noopener" style="text-decoration:none">Open in WhatsApp</a></div>`;
+}
+
+function textUI(name){
+  if(name==="Text Diff")return `<div class="two"><div class="field"><label>Original Text</label><textarea id="ta"></textarea></div><div class="field"><label>Modified Text</label><textarea id="tb"></textarea></div></div><div class="actions"><button class="primary" onclick="textAction('${name}')">Compare Texts</button></div><div id="textResult"></div>`;
+  return `<div class="field"><label>Input Text</label><textarea id="textInput" placeholder="Type or paste text here…"></textarea></div>
+  ${name==="Find & Replace"?`<div class="two"><div class="field"><label>Find</label><input id="find"></div><div class="field"><label>Replace with</label><input id="replace"></div></div>`:""}
+  ${name==="Case Converter"?`<div class="field"><label>Target Format</label><select id="case"><option value="UPPERCASE">UPPERCASE</option><option value="lowercase">lowercase</option><option value="Title Case">Title Case</option><option value="camelCase">camelCase</option><option value="snake_case">snake_case</option><option value="kebab-case">kebab-case</option></select></div>`:""}
+  ${name==="Lorem Ipsum Generator"?`<div class="field"><label>Number of Paragraphs</label><input id="para" type="number" min="1" max="20" value="3"></div>`:""}
+  <div class="actions"><button class="primary" onclick="textAction('${esc(name)}')">Run & Copy</button></div><div id="textResult"></div>`;
+}
+
+function textAction(name){
+  if(name==="Text Diff"){
+    const a=($("ta")?.value||"").split("\n"),b=($("tb")?.value||"").split("\n");
+    let out="";
+    const len=Math.max(a.length,b.length);
+    for(let i=0;i<len;i++){
+      if(a[i]!==b[i]) out+=`Line ${i+1}:\n- ${a[i]||""}\n+ ${b[i]||""}\n\n`;
+    }
+    $("textResult").innerHTML=`<div class="result glass">${esc(out||"✓ Both texts are identical line for line.")}</div>`;
+    return;
+  }
+  const x=$("textInput")?.value||"";let r=x;
+  if(name==="Word Counter"){
+    const words=x.trim()?x.trim().split(/\s+/).length:0;
+    r=`Words: ${words}\nCharacters: ${x.length}\nSentences: ${(x.match(/[.!?]+(?=\s|$)/g)||[]).length}\nLines: ${x?x.split(/\r?\n/).length:0}`;
+  }
+  if(name==="Case Converter"){
+    const mode=$("case").value;
+    if(mode==="UPPERCASE")r=x.toUpperCase();
+    if(mode==="lowercase")r=x.toLowerCase();
+    if(mode==="Title Case")r=x.toLowerCase().replace(/\b\w/g,m=>m.toUpperCase());
+    if(mode==="camelCase")r=x.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g,(_,c)=>c.toUpperCase()).replace(/^[A-Z]/,m=>m.toLowerCase());
+    if(mode==="snake_case")r=x.trim().toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,"");
+    if(mode==="kebab-case")r=x.trim().toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+  }
+  if(name==="Remove Duplicate Lines")r=[...new Set(x.split(/\r?\n/))].join("\n");
+  if(name==="Sort Lines")r=x.split(/\r?\n/).sort((a,b)=>a.localeCompare(b)).join("\n");
+  if(name==="Reverse Text")r=[...x].reverse().join("");
+  if(name==="Remove Extra Spaces")r=x.replace(/\s+/g," ").trim();
+  if(name==="Find & Replace")r=x.replace(new RegExp(($("find").value||"").replace(/[.*+?^${}()|[\]\\]/g,"\\$&"),"g"),$("replace").value||"");
+  if(name==="Lorem Ipsum Generator"){
+    const p="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.";
+    r=Array.from({length:+$("para").value||3},()=>p).join("\n\n");
+  }
+  if(name==="Slug Generator")r=x.toLowerCase().normalize("NFKD").replace(/[^\w\s-]/g,"").trim().replace(/\s+/g,"-").replace(/-+/g,"-");
+  if(name==="Text to Binary")r=x.split('').map(c=>c.charCodeAt(0).toString(2).padStart(8,'0')).join(' ');
+  if(name==="Binary to Text")r=x.split(' ').map(b=>String.fromCharCode(parseInt(b,2))).join('');
+  if(name==="HTML Entity Encoder")r=x.replace(/[\u00A0-\u9999<>\&]/g, i => '&#'+i.charCodeAt(0)+';');
+  if(name==="HTML Entity Decoder"){
+    const txt=document.createElement("textarea");
+    txt.innerHTML=x;
+    r=txt.value;
+  }
+  if(name==="Text to Hex")r=x.split('').map(c=>c.charCodeAt(0).toString(16).padStart(2,'0')).join(' ');
+  if(name==="Hex to Text")r=x.split(' ').map(h=>String.fromCharCode(parseInt(h,16))).join('');
+  if(name==="Text Scrambler")r=x.split(' ').map(w=>w.split('').sort(()=>Math.random()-0.5).join('')).join(' ');
+
+  $("textResult").innerHTML=`<div class="result glass">${esc(r)}</div><div class="actions"><button class="secondary" onclick="copyText(${JSON.stringify(r)});toast('✓ Copied to clipboard')">Copy Result</button></div>`;
+}
+
+function devUI(name){
+  if(name==="Regex Tester")return `<div class="two"><div class="field"><label>Regular Expression</label><input id="rx" placeholder="^[a-zA-Z0-9]+$"></div><div class="field"><label>Flags</label><input id="rf" value="g"></div></div><div class="field"><label>Test Text</label><textarea id="rt" placeholder="String to test..."></textarea></div><div class="actions"><button class="primary" onclick="devAction('${name}')">Test Regex</button></div><div id="devResult"></div>`;
+  if(name==="Color Converter")return `<div class="field"><label>HEX / RGB / HSL</label><input id="colorVal" value="#1769e0"></div><div class="actions"><button class="primary" onclick="devAction('${name}')">Convert Color</button></div><div id="devResult"></div>`;
+  if(name==="Hash Generator")return `<div class="field"><label>Text to Hash</label><textarea id="devText"></textarea></div><div class="field"><label>Algorithm</label><select id="alg"><option value="SHA-256">SHA-256</option><option value="SHA-1">SHA-1</option></select></div><div class="actions"><button class="primary" onclick="devAction('${name}')">Generate Hash</button></div><div id="devResult"></div>`;
+  return `<div class="field"><label>Input Data</label><textarea id="devText" placeholder="Enter input here…"></textarea></div><div class="actions"><button class="primary" onclick="devAction('${esc(name)}')">Run Tool</button></div><div id="devResult"></div>`;
+}
+
+async function devAction(name){
+  let x=$("devText")?.value||"",r="";
+  try{
+    if(name==="JSON Formatter"||name==="JSON Minifier"){
+      const o=JSON.parse(x);
+      r=name==="JSON Formatter"?JSON.stringify(o,null,2):JSON.stringify(o);
+    }
+    if(name==="CSV to JSON"){
+       const lines = x.trim().split(/\r?\n/);
+       const headers = lines[0].split(',');
+       const arr = lines.slice(1).map(l => {
+           const obj = {};
+           l.split(',').forEach((v, i) => obj[headers[i]] = v);
+           return obj;
+       });
+       r = JSON.stringify(arr, null, 2);
+    }
+    if(name==="JSON to CSV"){
+       const arr = JSON.parse(x);
+       if(arr.length) {
+         const headers = Object.keys(arr[0]).join(',');
+         const rows = arr.map(obj => Object.values(obj).join(',')).join('\n');
+         r = headers + '\n' + rows;
+       }
+    }
+    if(name==="Base64 Encoder")r=btoa(unescape(encodeURIComponent(x)));
+    if(name==="Base64 Decoder")r=decodeURIComponent(escape(atob(x)));
+    if(name==="URL Encoder")r=encodeURIComponent(x);
+    if(name==="URL Decoder")r=decodeURIComponent(x);
+    if(name==="UUID Generator")r=crypto.randomUUID();
+    if(name==="Hash Generator"){
+      const buf=await crypto.subtle.digest($("alg").value,new TextEncoder().encode(x));
+      r=[...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
+    }
+    if(name==="Timestamp Converter"){
+      const n=Number(x);
+      r=Number.isFinite(n)&&x.trim()!==""?new Date(n<1e11?n*1000:n).toLocaleString()+" ("+new Date(n<1e11?n*1000:n).toISOString()+")":"Current Timestamp (ms): "+Date.now();
+    }
+    if(name==="Regex Tester"){
+      const m=$("rt").value.match(new RegExp($("rx").value,$("rf").value));
+      r=m?`Matches found: ${m.length}\n${m.join("\n")}`:"No matches found.";
+    }
+    if(name==="Color Converter"){
+      let c=($("colorVal")?.value||"").trim();
+      if(/^#?[0-9a-f]{6}$/i.test(c)){
+        c=c.replace("#","");
+        const R=parseInt(c.slice(0,2),16),G=parseInt(c.slice(2,4),16),B=parseInt(c.slice(4,6),16);
+        r=`HEX: #${c.toUpperCase()}\nRGB: rgb(${R}, ${G}, ${B})\nCSS: #${c}`;
+      }else{
+        r="Enter a valid 6-digit hex code (e.g. #1769e0)";
+      }
+    }
+    if(name==="JWT Decoder"){
+      const parts=x.split('.');
+      if(parts.length!==3) throw new Error();
+      const payload=decodeURIComponent(escape(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'))));
+      r=JSON.stringify(JSON.parse(payload),null,2);
+    }
+    $("devResult").innerHTML=`<div class="result glass">${esc(r)}</div><div class="actions"><button class="secondary" onclick="copyText(${JSON.stringify(r)});toast('✓ Copied')">Copy Output</button></div>`;
+  }catch(e){
+    toast("Input is invalid for this tool");
+  }
+}
+
+function calcUI(name){
+  if(name==="Percentage Calculator")return `<div class="two"><div class="field"><label>Value</label><input id="ca" type="number" value="25"></div><div class="field"><label>Total</label><input id="cb" type="number" value="200"></div></div><div class="actions"><button class="primary" onclick="calc('${name}')">Calculate</button></div><div id="calcResult"></div>`;
+  if(["Age Calculator","Date Difference"].includes(name))return `<div class="two"><div class="field"><label>Start / Birth Date</label><input id="dateA" type="date"></div><div class="field"><label>End Date (leave blank for today)</label><input id="dateB" type="date"></div></div><div class="actions"><button class="primary" onclick="calc('${name}')">Calculate</button></div><div id="calcResult"></div>`;
+  if(name==="BMI Calculator")return `<div class="two"><div class="field"><label>Height (cm)</label><input id="bmiH" type="number" value="170"></div><div class="field"><label>Weight (kg)</label><input id="bmiW" type="number" value="70"></div></div><div class="actions"><button class="primary" onclick="calc('${name}')">Calculate BMI</button></div><div id="calcResult"></div>`;
+  if(name.includes("Converter"))return `<div class="two"><div class="field"><label>Value</label><input id="cv" type="number" value="1"></div><div class="field"><label>Conversion</label><select id="units"></select></div></div><div class="actions"><button class="primary" onclick="calc('${name}')">Convert</button></div><div id="calcResult"></div>`;
+  if(name==="EMI Calculator")return `<div class="three"><div class="field"><label>Loan Amount (₹)</label><input id="loan" type="number" value="500000"></div><div class="field"><label>Annual Rate (%)</label><input id="rate" type="number" step="0.1" value="9.5"></div><div class="field"><label>Tenure (Months)</label><input id="months" type="number" value="60"></div></div><div class="actions"><button class="primary" onclick="calc('${name}')">Calculate EMI</button></div><div id="calcResult"></div>`;
+  if(name==="Discount Calculator"||name==="GST Calculator"||name==="Tip Calculator")return `<div class="two"><div class="field"><label>Amount (₹)</label><input id="amount" type="number" value="1000"></div><div class="field"><label>Rate / Percentage (%)</label><input id="pct" type="number" value="${name==="GST Calculator"?18:name==="Tip Calculator"?10:20}"></div></div>${name==="Tip Calculator"?`<div class="field"><label>Split between people</label><input id="people" type="number" value="2"></div>`:""}<div class="actions"><button class="primary" onclick="calc('${name}')">Calculate</button></div><div id="calcResult"></div>`;
+  if(name==="Random Number Generator")return `<div class="two"><div class="field"><label>Min</label><input id="min" type="number" value="1"></div><div class="field"><label>Max</label><input id="max" type="number" value="100"></div></div><div class="actions"><button class="primary" onclick="calc('${name}')">Generate Number</button></div><div id="calcResult"></div>`;
+  if(name==="Password Generator")return `<div class="field"><label>Password Length</label><input id="len" type="number" min="6" max="64" value="16"></div><div class="actions"><button class="primary" onclick="calc('${name}')">Generate Secure Password</button></div><div id="calcResult"></div>`;
+  if(name==="Stopwatch")return `<div class="result glass center" id="sw" style="font-size:36px;font-weight:900;letter-spacing:1px">00:00.000</div><div class="actions" style="justify-content:center"><button class="primary" id="swStart">Start</button><button class="secondary" id="swReset">Reset</button></div>`;
+  return `<div class="field"><label>Seconds</label><input id="secs" type="number" min="1" value="60"></div><div class="actions"><button class="primary" id="timerStart">Start Countdown</button></div><div class="result glass center" id="timer" style="font-size:36px;font-weight:900">01:00</div>`;
+}
+
+function populateUnits(name){
+  const u=$("units");if(!u)return;
+  const opts={
+    "Length Converter":[["m|km","Meters to Kilometers"],["km|m","Kilometers to Meters"],["m|ft","Meters to Feet"],["ft|m","Feet to Meters"],["cm|in","Centimeters to Inches"],["mi|km","Miles to Kilometers"]],
+    "Weight Converter":[["kg|g","Kilograms to Grams"],["g|kg","Grams to Kilograms"],["kg|lb","Kilograms to Pounds"],["lb|kg","Pounds to Kilograms"],["g|oz","Grams to Ounces"]],
+    "Temperature Converter":[["C|F","Celsius to Fahrenheit"],["F|C","Fahrenheit to Celsius"],["C|K","Celsius to Kelvin"],["K|C","Kelvin to Celsius"]],
+    "Speed Converter":[["km/h|mph","km/h to mph"],["mph|km/h","mph to km/h"],["km/h|m/s","km/h to m/s"],["m/s|km/h","m/s to km/h"]],
+    "Time Converter":[["s|min","Seconds to Minutes"],["min|h","Minutes to Hours"],["h|day","Hours to Days"],["day|h","Days to Hours"],["h|min","Hours to Minutes"]],
+    "Data Storage Converter":[["MB|GB","Megabytes to Gigabytes"],["GB|MB","Gigabytes to Megabytes"],["GB|TB","Gigabytes to Terabytes"],["KB|MB","Kilobytes to Megabytes"],["B|KB","Bytes to Kilobytes"]]
+  };
+  const list=opts[name]||[["1|1","Standard"]];
+  u.innerHTML=list.map(o=>`<option value="${o[0]}">${o[1]}</option>`).join("");
+}
+
+function calc(name){
+  let r="";
+  if(name==="Percentage Calculator"){
+    const a=+($("ca")?.value||0),b=+($("cb")?.value||1);
+    r=`${a} is ${(a/b*100).toFixed(2)}% of ${b}`;
+  }
+  if(name==="Age Calculator"){
+    const d=new Date($("dateA").value);
+    const e=$("dateB")?.value?new Date($("dateB").value):new Date();
+    let y=e.getFullYear()-d.getFullYear();
+    if(e<new Date(e.getFullYear(),d.getMonth(),d.getDate()))y--;
+    r=`Age: ${y} years old`;
+  }
+  if(name==="Date Difference"){
+    const a1=new Date($("dateA").value),b1=new Date($("dateB").value||new Date());
+    r=`Difference: ${Math.round(Math.abs(b1-a1)/(1000*60*60*24))} days`;
+  }
+  if(name==="BMI Calculator"){
+    const h=+($("bmiH")?.value||170)/100;
+    const w=+($("bmiW")?.value||70);
+    const bmi=w/(h*h);
+    let cat=bmi<18.5?"Underweight":bmi<24.9?"Normal weight":bmi<29.9?"Overweight":"Obese";
+    r=`BMI: ${bmi.toFixed(1)}\nCategory: ${cat}`;
+  }
+  if(name==="EMI Calculator"){
+    const P=+($("loan")?.value||0),n=+($("months")?.value||1),rr=(+($("rate")?.value||0))/1200;
+    const m=rr?P*rr*Math.pow(1+rr,n)/(Math.pow(1+rr,n)-1):P/n;
+    r=`Monthly EMI: ₹${m.toFixed(2)}\nTotal Amount: ₹${(m*n).toFixed(2)}\nTotal Interest: ₹${(m*n-P).toFixed(2)}`;
+  }
+  if(name==="Discount Calculator"){
+    const val=+($("amount")?.value||0),pct=+($("pct")?.value||0);
+    const save=val*pct/100;
+    r=`Discount Savings: ₹${save.toFixed(2)}\nFinal Price: ₹${(val-save).toFixed(2)}`;
+  }
+  if(name==="GST Calculator"){
+    const val=+($("amount")?.value||0),pct=+($("pct")?.value||0);
+    const tax=val*pct/100;
+    r=`GST Amount: ₹${tax.toFixed(2)}\nTotal Price: ₹${(val+tax).toFixed(2)}`;
+  }
+  if(name==="Tip Calculator"){
+    const val=+($("amount")?.value||0),pct=+($("pct")?.value||0),p=Math.max(1,+($("people")?.value||1));
+    const tip=val*pct/100;
+    r=`Tip Amount: ₹${tip.toFixed(2)}\nTotal Bill: ₹${(val+tip).toFixed(2)}\nPer Person: ₹${((val+tip)/p).toFixed(2)}`;
+  }
+  if(name==="Random Number Generator"){
+    const mn=+($("min")?.value||0),mx=+($("max")?.value||100);
+    r=`Generated: ${Math.floor(Math.random()*(mx-mn+1))+mn}`;
+  }
+  if(name==="Password Generator"){
+    const chars="ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*_-";
+    const n=Math.min(64,Math.max(6,+($("len")?.value||16)));
+    const a=new Uint32Array(n);
+    crypto.getRandomValues(a);
+    r=[...a].map(v=>chars[v%chars.length]).join("");
+  }
+  if(name.includes("Converter")){
+    r=convertUnits(name,+($("cv")?.value||0),$("units")?.value||"m|km");
+  }
+  $("calcResult").innerHTML=`<div class="result glass">${esc(String(r))}</div>`;
+}
+
+function convertUnits(name,v,u){
+  const [a,b]=u.split("|");if(a===b)return v;
+  const tables={
+    Length:{m:1,km:1000,cm:0.01,mm:0.001,ft:0.3048,yd:0.9144,mi:1609.344,in:0.0254},
+    Weight:{kg:1,g:0.001,lb:0.45359237,oz:0.0283495},
+    Speed:{"km/h":1,"m/s":3.6,mph:1.609344},
+    Time:{s:1,min:60,h:3600,day:86400},
+    Storage:{B:1,KB:1024,MB:1048576,GB:1073741824,TB:1099511627776}
+  };
+  if(name==="Temperature Converter"){
+    let c=a==="C"?v:a==="F"?(v-32)*5/9:v-273.15;
+    return (b==="C"?c:b==="F"?c*9/5+32:c+273.15).toFixed(2);
+  }
+  const k=name.replace(" Converter","");
+  const t=tables[k];
+  return (v*t[a]/t[b]).toFixed(4);
+}
+
+function initStopwatch(){
+  let start=0,elapsed=0,run=false;
+  const tick=()=>{if(run){elapsed=performance.now()-start;$("sw").textContent=fmt(elapsed)}requestAnimationFrame(tick)};
+  $("swStart").onclick=()=>{
+    if(!run){start=performance.now()-elapsed;run=true;$("swStart").textContent="Pause"}
+    else{run=false;$("swStart").textContent="Resume"}
+  };
+  $("swReset").onclick=()=>{run=false;elapsed=0;$("sw").textContent="00:00.000";$("swStart").textContent="Start"};
+  tick();
+}
+function fmt(ms){const m=Math.floor(ms/60000),s=Math.floor(ms/1000)%60,mm=Math.floor(ms%1000);return `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}.${String(mm).padStart(3,"0")}`}
+
+function initCountdown(){
+  let id=null;
+  $("timerStart").onclick=()=>{
+    clearInterval(id);
+    let left=Math.max(1,+($("secs")?.value||60));
+    $("timerStart").disabled=true;
+    id=setInterval(()=>{
+      left--;
+      $("timer").textContent=`${String(Math.floor(left/60)).padStart(2,"0")}:${String(left%60).padStart(2,"0")}`;
+      if(left<=0){
+        clearInterval(id);
+        $("timerStart").disabled=false;
+        toast("⏱ Countdown finished!");
+      }
+    },1000);
+  };
+}
+
+function initSig(){
+  const c=$("sig"),x=c.getContext("2d");
+  x.lineWidth=3.5;x.lineCap="round";x.strokeStyle="#000000";
+  let on=false;
+  const getPos=e=>{
+    const r=c.getBoundingClientRect();
+    const cx=e.touches?e.touches[0].clientX:e.clientX;
+    const cy=e.touches?e.touches[0].clientY:e.clientY;
+    return [(cx-r.left)*c.width/r.width, (cy-r.top)*c.height/r.height];
+  };
+  const start=e=>{on=true;const[px,py]=getPos(e);x.beginPath();x.moveTo(px,py);e.preventDefault()};
+  const move=e=>{if(!on)return;const[px,py]=getPos(e);x.lineTo(px,py);x.stroke();e.preventDefault()};
+  const end=()=>on=false;
+  c.addEventListener("pointerdown",start);c.addEventListener("pointermove",move);window.addEventListener("pointerup",end);
+}
+function clearSig(){$("sig").getContext("2d").clearRect(0,0,$("sig").width,$("sig").height)}
+function downloadSig(){$("sig").toBlob(b=>downloadBlob(b,"signature-transparent.png"))}
+
+function privacyToolUI(name){
+  if(name==="Photo Details Viewer & Editor"){
+    return `<div class="drop glass" id="photoMetaDrop"><input id="photoMetaFile" type="file" accept="image/*"><b>Choose a photo</b><div id="photoMetaInfo" style="margin-top:8px;font-weight:700;color:var(--accent)"></div></div>
+    <div class="actions"><button class="primary" onclick="loadPhotoDetails()">View Details</button><button class="secondary" onclick="clearPhotoDetails()">Clear</button></div>
+    <div id="photoMetaPreview" class="center" style="margin:14px 0"></div>
+    <div id="photoMetaEditor"></div><div id="photoMetaResult"></div>
+    <p class="muted" style="font-size:12px;margin-top:10px">GPS and timestamp fields can be edited for JPEG output. Browser support for writing every proprietary tag varies by format.</p>`;
+  }
+  if(name==="Photo Safety Cleaner"){
+    return `${fileBox(false,"image/*")}
+    <div class="field"><label>Output</label><select id="photoCleanFormat"><option value="image/jpeg">JPEG — broad compatibility</option><option value="image/png">PNG — metadata-free pixel copy</option><option value="image/webp">WebP — compact sharing copy</option></select></div>
+    <div class="actions"><button class="primary" onclick="cleanPhotoForSharing()">Create Safe Sharing Copy</button></div><div id="fileResult"></div>`;
+  }
+  if(name==="Video Details Viewer"){
+    return `${fileBox(false,"video/*")}<div class="actions"><button class="primary" onclick="inspectVideoDetails()">Inspect Video</button></div><div id="fileResult"></div>`;
+  }
+  if(name==="Video Safety Re-encoder"){
+    return `<div class="drop glass" id="videoCleanDrop"><input id="videoCleanFile" type="file" accept="video/*"><b>Choose a video</b><div id="videoCleanInfo" style="margin-top:8px;font-weight:700;color:var(--accent)"></div></div>
+    <div class="field"><label>Recording quality</label><select id="videoQuality"><option value="2500000">Standard</option><option value="5000000">High</option><option value="8000000">Very High</option></select></div>
+    <div class="actions"><button class="primary" onclick="reencodeVideoForSharing()">Create Clean Video Copy</button></div><div id="fileResult"></div>
+    <p class="muted" style="font-size:12px;margin-top:10px">This uses the browser's media recorder when supported. It creates a newly encoded stream; it cannot guarantee removal of every container-specific metadata field.</p>`;
+  }
+  if(name==="PDF Privacy Cleaner"){
+    return `${fileBox(false,"application/pdf,.pdf")}<div class="actions"><button class="primary" onclick="cleanPdfPrivacy()">Create Clean PDF Copy</button></div><div id="fileResult"></div>`;
+  }
+  if(name==="Office Privacy Cleaner"){
+    return `${fileBox(false,".docx,.pptx,.xlsx,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")}
+    <div class="actions"><button class="primary" onclick="cleanOfficePrivacy()">Clean Document Properties</button></div><div id="fileResult"></div>`;
+  }
+  if(name==="File Metadata Inspector"){
+    return `${fileBox(false,"*")}<div class="actions"><button class="primary" onclick="inspectGenericFile()">Inspect File</button></div><div id="fileResult"></div>`;
+  }
+  if(name==="Safe Sharing Cleaner"){
+    return `${fileBox(false,"*")}<div class="actions"><button class="primary" onclick="safeShareClean()">Clean & Download Sharing Copy</button></div><div id="fileResult"></div>
+    <p class="muted" style="font-size:12px;margin-top:10px">The cleaner uses the strongest browser-side method available for the selected format. Unsupported formats are reported instead of being altered blindly.</p>`;
+  }
+  return `<div class="result glass">Choose a privacy tool.</div>`;
+}
+
+function photoMetaField(id,label,value="",placeholder=""){
+  return `<div class="field"><label>${esc(label)}</label><input id="${id}" value="${esc(value||"")}" placeholder="${esc(placeholder)}"></div>`;
+}
+
+async function loadPhotoDetails(){
+  const f=$("photoMetaFile")?.files?.[0];
+  if(!f)return toast("Choose a photo first");
+  try{
+    const meta = window.exifr ? await exifr.parse(f,{gps:true,tiff:true,exif:true,iptc:true,icc:true,xmp:true}) : {};
+    const url=URL.createObjectURL(f);
+    $("photoMetaPreview").innerHTML=`<img src="${url}" alt="Preview" style="max-width:100%;max-height:280px;border-radius:14px;border:1px solid var(--line);box-shadow:var(--shadow)">`;
+    const gpsLat=meta?.latitude ?? meta?.GPSLatitude ?? "";
+    const gpsLon=meta?.longitude ?? meta?.GPSLongitude ?? "";
+    const dt=meta?.DateTimeOriginal || meta?.CreateDate || meta?.ModifyDate || "";
+    const fields=[
+      ["metaTitle","Title",meta?.XPTitle||meta?.Title||""],
+      ["metaArtist","Artist / Author",meta?.Artist||meta?.Creator||""],
+      ["metaDescription","Description",meta?.ImageDescription||meta?.Description||""],
+      ["metaSoftware","Software / Creator",meta?.Software||meta?.CreatorTool||""],
+      ["metaDate","Date & time",String(dt||"")],
+      ["metaLat","GPS latitude",gpsLat],
+      ["metaLon","GPS longitude",gpsLon],
+      ["metaCamera","Camera / Model",meta?.Model||""],
+      ["metaMake","Camera maker",meta?.Make||""],
+      ["metaCopyright","Copyright",meta?.Copyright||""]
+    ];
+    const basic=[
+      ["File",f.name],["Type",f.type||"Unknown"],["Size",(f.size/1024/1024).toFixed(2)+" MB"],
+      ["Last modified",new Date(f.lastModified).toLocaleString()],["Width",meta?.ImageWidth||meta?.ExifImageWidth||"—"],["Height",meta?.ImageHeight||meta?.ExifImageHeight||"—"],
+      ["Latitude",gpsLat||"—"],["Longitude",gpsLon||"—"]
+    ];
+    let map="";
+    if(Number.isFinite(Number(gpsLat)) && Number.isFinite(Number(gpsLon))){
+      const link=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(gpsLat+","+gpsLon)}`;
+      map=`<a class="map-link" href="${link}" target="_blank" rel="noopener">📍 Open location in Google Maps</a>`;
+    }
+    $("photoMetaEditor").innerHTML=`<div class="meta-grid">${basic.map(x=>`<div class="meta-card"><b>${esc(x[0])}</b><span>${esc(x[1])}</span></div>`).join("")}</div>
+      ${map}<h3 style="margin:18px 0 10px">Editable details</h3>
+      <div class="two">${fields.map(x=>photoMetaField(x[0],x[1],x[2])).join("")}</div>
+      <div class="actions"><button class="primary" onclick="saveEditedPhotoMetadata()">Save Edited JPEG Copy</button><button class="secondary" onclick="removePhotoMetadataFromEditor()">Remove All Common Photo Metadata</button></div>`;
+    $("photoMetaResult").innerHTML=`<div class="result glass">Detected ${Object.keys(meta||{}).length} readable metadata fields. Some vendor-specific fields may not be exposed by the browser parser.</div>`;
+    $("photoMetaFile").dataset.metaLoaded="1";
+  }catch(e){
+    console.error(e);toast("Could not read photo metadata");
+  }
+}
+
+function clearPhotoDetails(){
+  ["photoMetaPreview","photoMetaEditor","photoMetaResult"].forEach(id=>{if($(id))$(id).innerHTML=""});
+}
+
+async function saveEditedPhotoMetadata(){
+  const f=$("photoMetaFile")?.files?.[0];
+  if(!f)return toast("Choose a photo first");
+  try{
+    const im=await loadImage(f);
+    const c=document.createElement("canvas");c.width=im.naturalWidth;c.height=im.naturalHeight;
+    c.getContext("2d").drawImage(im,0,0);
+    const jpeg=await new Promise(res=>c.toBlob(res,"image/jpeg",0.95));
+    const dataUrl=await blobToDataURL(jpeg);
+    if(!window.piexif){
+      downloadBlob(jpeg,`edited-${f.name.replace(/\.[^.]+$/,"")}.jpg`);
+      return;
+    }
+    const exifObj={
+      "0th":{
+        [piexif.ImageIFD.ImageDescription]:$("metaDescription").value,
+        [piexif.ImageIFD.Artist]:$("metaArtist").value,
+        [piexif.ImageIFD.Software]:$("metaSoftware").value,
+        [piexif.ImageIFD.Copyright]:$("metaCopyright").value
+      },
+      "Exif":{
+        [piexif.ExifIFD.DateTimeOriginal]:$("metaDate").value,
+        [piexif.ExifIFD.UserComment]:""
+      },
+      "GPS":{}
+    };
+    const lat=parseFloat($("metaLat").value),lon=parseFloat($("metaLon").value);
+    if(Number.isFinite(lat) && Number.isFinite(lon)){
+      exifObj.GPS[piexif.GPSIFD.GPSLatitudeRef]=lat>=0?"N":"S";
+      exifObj.GPS[piexif.GPSIFD.GPSLatitude]=decimalToDms(Math.abs(lat));
+      exifObj.GPS[piexif.GPSIFD.GPSLongitudeRef]=lon>=0?"E":"W";
+      exifObj.GPS[piexif.GPSIFD.GPSLongitude]=decimalToDms(Math.abs(lon));
+    }
+    const exifBytes=piexif.dump(exifObj);
+    const outData=piexif.insert(exifBytes,dataUrl);
+    downloadBlob(dataURLToBlob(outData),"edited-"+f.name.replace(/\.[^.]+$/,"")+".jpg");
+    $("photoMetaResult").innerHTML=`<div class="result glass">✓ Edited JPEG created with the selected fields.</div>`;
+  }catch(e){console.error(e);toast("Could not write the selected photo details")}
+}
+
+async function removePhotoMetadataFromEditor(){
+  const f=$("photoMetaFile")?.files?.[0];
+  if(!f)return toast("Choose a photo first");
+  await cleanPhotoForSharing(f);
+}
+
+function decimalToDms(v){
+  const d=Math.floor(v),mFloat=(v-d)*60,m=Math.floor(mFloat),s=Math.round((mFloat-m)*6000)/100;
+  return [[d,1],[m,1],[Math.round(s*100),100]];
+}
+function blobToDataURL(blob){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(blob)})}
+function dataURLToBlob(dataUrl){
+  const [h,b]=dataUrl.split(","),mime=(h.match(/data:([^;]+)/)||[])[1]||"image/jpeg";
+  const bin=atob(b),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
+  return new Blob([u],{type:mime});
+}
+
+async function cleanPhotoForSharing(passedFile){
+  const f=passedFile||$("fileInput")?.files?.[0];
+  if(!f)return toast("Choose a photo first");
+  try{
+    const im=await loadImage(f),mime=$("photoCleanFormat")?.value||"image/jpeg";
+    const c=document.createElement("canvas");c.width=im.naturalWidth;c.height=im.naturalHeight;
+    const ctx=c.getContext("2d");if(mime==="image/jpeg"){ctx.fillStyle="#fff";ctx.fillRect(0,0,c.width,c.height)}
+    ctx.drawImage(im,0,0);
+    c.toBlob(b=>{
+      const ext=mime==="image/png"?"png":mime==="image/webp"?"webp":"jpg";
+      downloadBlob(b,`${f.name.replace(/\.[^.]+$/,"")}-safe.${ext}`);
+      const target=$("fileResult")||$("photoMetaResult");
+      if(target)target.innerHTML=`<div class="result glass">✓ Clean sharing copy created. Canvas re-encoding removes common embedded image metadata and provenance payloads carried in the original container when they are not part of the pixels.</div>`;
+    },mime,0.95);
+  }catch(e){console.error(e);toast("Could not create clean photo")}
+}
+
+async function inspectVideoDetails(){
+  const f=$("fileInput")?.files?.[0];if(!f)return toast("Choose a video");
+  const url=URL.createObjectURL(f),v=document.createElement("video");v.preload="metadata";v.src=url;
+  v.onloadedmetadata=()=>{
+    $("fileResult").innerHTML=`<div class="meta-grid">
+      <div class="meta-card"><b>File</b><span>${esc(f.name)}</span></div>
+      <div class="meta-card"><b>Type</b><span>${esc(f.type||"Unknown")}</span></div>
+      <div class="meta-card"><b>Size</b><span>${(f.size/1024/1024).toFixed(2)} MB</span></div>
+      <div class="meta-card"><b>Duration</b><span>${v.duration.toFixed(3)} s</span></div>
+      <div class="meta-card"><b>Resolution</b><span>${v.videoWidth} × ${v.videoHeight}</span></div>
+      <div class="meta-card"><b>Last modified</b><span>${new Date(f.lastModified).toLocaleString()}</span></div>
+    </div>`;
+    URL.revokeObjectURL(url);
+  };
+  v.onerror=()=>toast("Browser could not read this video");
+}
+
+async function reencodeVideoForSharing(){
+  const f=$("videoCleanFile")?.files?.[0];if(!f)return toast("Choose a video");
+  if(!HTMLVideoElement.prototype.captureStream && !HTMLVideoElement.prototype.webkitCaptureStream){
+    toast("This browser does not support video re-encoding here");return;
+  }
+  try{
+    const v=document.createElement("video"),url=URL.createObjectURL(f);
+    v.src=url;v.muted=false;v.playsInline=true;
+    await new Promise((res,rej)=>{v.onloadedmetadata=res;v.onerror=rej});
+    const stream=(v.captureStream?v.captureStream():v.webkitCaptureStream());
+    const mime=["video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"].find(x=>MediaRecorder.isTypeSupported(x));
+    if(!mime)throw new Error("No supported recording format");
+    const rec=new MediaRecorder(stream,{mimeType:mime,bitsPerSecond:+$("videoQuality").value});
+    const chunks=[];rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+    const done=new Promise((res,rej)=>{rec.onstop=res;rec.onerror=rej});
+    rec.start(1000);await v.play();v.onended=()=>rec.stop();await done;
+    const blob=new Blob(chunks,{type:mime});downloadBlob(blob,`${f.name.replace(/\.[^.]+$/,"")}-safe.webm`);
+    $("fileResult").innerHTML=`<div class="result glass">✓ New WebM sharing copy created. The stream was re-encoded by the browser; source container metadata is not copied deliberately.</div>`;
+    URL.revokeObjectURL(url);
+  }catch(e){console.error(e);toast("Video re-encoding failed on this browser")}
+}
+
+async function cleanPdfPrivacy(){
+  const f=$("fileInput")?.files?.[0];if(!f)return toast("Choose a PDF");
+  try{
+    const src=await PDFLib.PDFDocument.load(await f.arrayBuffer());
+    src.setTitle("");src.setAuthor("");src.setSubject("");src.setKeywords([]);src.setCreator("");src.setProducer("");
+    const bytes=await src.save({useObjectStreams:true});
+    downloadBlob(new Blob([bytes],{type:"application/pdf"}),`${f.name.replace(/\.[^.]+$/,"")}-safe.pdf`);
+    $("fileResult").innerHTML=`<div class="result glass">✓ PDF privacy copy created with common document properties cleared.</div>`;
+  }catch(e){console.error(e);toast("Could not clean this PDF")}
+}
+
+async function cleanOfficePrivacy(){
+  const f=$("fileInput")?.files?.[0];if(!f)return toast("Choose a DOCX, PPTX or XLSX file");
+  const ext=f.name.split(".").pop().toLowerCase();
+  if(!["docx","pptx","xlsx"].includes(ext))return toast("Choose DOCX, PPTX or XLSX");
+  try{
+    const zip=await JSZip.loadAsync(await f.arrayBuffer());
+    const corePath="docProps/core.xml",appPath="docProps/app.xml",customPath="docProps/custom.xml";
+    const blankCore=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"></cp:coreProperties>`;
+    if(zip.file(corePath))zip.file(corePath,blankCore);
+    if(zip.file(appPath)){
+      let app=await zip.file(appPath).async("string");
+      app=app.replace(/<Application>[\s\S]*?<\/Application>/gi,"<Application></Application>")
+             .replace(/<AppVersion>[\s\S]*?<\/AppVersion>/gi,"<AppVersion></AppVersion>")
+             .replace(/<Company>[\s\S]*?<\/Company>/gi,"<Company></Company>");
+      zip.file(appPath,app);
+    }
+    if(zip.file(customPath))zip.remove(customPath);
+    ["docProps/thumbnail.jpeg","docProps/thumbnail.png"].forEach(p=>{if(zip.file(p))zip.remove(p)});
+    const blob=await zip.generateAsync({type:"blob"});
+    downloadBlob(blob,`${f.name.replace(/\.[^.]+$/,"")}-safe.${ext}`);
+    $("fileResult").innerHTML=`<div class="result glass">✓ ${ext.toUpperCase()} privacy copy created. Common Office properties and custom properties were cleared where present.</div>`;
+  }catch(e){console.error(e);toast("Could not clean this Office file")}
+}
+
+async function inspectGenericFile(){
+  const f=$("fileInput")?.files?.[0];if(!f)return toast("Choose a file");
+  let extra="";
+  if(f.type.startsWith("image/") && window.exifr){
+    try{
+      const m=await exifr.parse(f,{gps:true,tiff:true,exif:true,iptc:true,xmp:true});
+      const gps=(m?.latitude!=null&&m?.longitude!=null)?`${m.latitude}, ${m.longitude}`:"—";
+      extra=`<div class="meta-card"><b>Readable metadata fields</b><span>${Object.keys(m||{}).length}</span></div><div class="meta-card"><b>GPS</b><span>${esc(gps)}</span></div>`;
+      if(m?.latitude!=null&&m?.longitude!=null)extra+=`<div class="meta-card"><b>Map</b><a class="map-link" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(m.latitude+","+m.longitude)}">Open Google Maps</a></div>`;
+    }catch{}
+  }
+  $("fileResult").innerHTML=`<div class="meta-grid">
+    <div class="meta-card"><b>Name</b><span>${esc(f.name)}</span></div>
+    <div class="meta-card"><b>MIME type</b><span>${esc(f.type||"Unknown")}</span></div>
+    <div class="meta-card"><b>Size</b><span>${(f.size/1024/1024).toFixed(3)} MB</span></div>
+    <div class="meta-card"><b>Last modified</b><span>${new Date(f.lastModified).toLocaleString()}</span></div>
+    ${extra}
+  </div>`;
+}
+
+async function safeShareClean(){
+  const f=$("fileInput")?.files?.[0];if(!f)return toast("Choose a file");
+  const ext=f.name.split(".").pop().toLowerCase();
+  if(f.type.startsWith("image/"))return cleanPhotoForSharing(f);
+  if(ext==="pdf"||f.type==="application/pdf")return cleanPdfPrivacy();
+  if(["docx","pptx","xlsx"].includes(ext))return cleanOfficePrivacy();
+  if(f.type.startsWith("video/")){ $("fileResult").innerHTML=`<div class="result glass">Use Video Safety Re-encoder for video files so the browser can create a new encoded stream.</div>`; return; }
+  if(["txt","md","csv","json","html","xml"].includes(ext)||f.type.startsWith("text/")){
+    const text=await f.text();
+    const clean=text.replace(/^\uFEFF/,"");
+    downloadBlob(new Blob([clean],{type:f.type||"text/plain"}),`${f.name.replace(/\.[^.]+$/,"")}-safe.${ext||"txt"}`);
+    $("fileResult").innerHTML=`<div class="result glass">✓ Clean text copy downloaded. Text formats do not carry a universal metadata block; content itself was not rewritten.</div>`;
+    return;
+  }
+  $("fileResult").innerHTML=`<div class="result glass">This format is not safely rewritable by the browser without a dedicated codec/parser, so no blind modification was performed.</div>`;
+}
+
+function scientificCalculatorUI(){
+  const keys=[
+    ["SHIFT","fn"],["ALPHA","fn"],["MODE","fn"],["SETUP","fn"],["Ans","fn"],["DEL","fn"],["AC","ac"],
+    ["sin","fn"],["cos","fn"],["tan","fn"],["sin⁻¹","fn"],["cos⁻¹","fn"],["tan⁻¹","fn"],["÷","op"],
+    ["sinh","fn"],["cosh","fn"],["tanh","fn"],["log","fn"],["ln","fn"],["√","fn"],["×","op"],
+    ["10ˣ","fn"],["eˣ","fn"],["x²","fn"],["x³","fn"],["xʸ","fn"],["1/x","fn"],["−","op"],
+    ["π","fn"],["e","fn"],["(","fn"],[")","fn"],["n!","fn"],["nCr","fn"],["+","op"],
+    ["7",""],["8",""],["9",""],["EXP","fn"],["%","fn"],["Ran#","fn"],["−","op"],
+    ["4",""],["5",""],["6",""],[".",""],[",",""],["nPr","fn"],["×","op"],
+    ["1",""],["2",""],["3",""],["Ans","fn"],["STO","fn"],["ENG","fn"],["÷","op"],
+    ["0",""],["00",""],["⌫","fn"],["=","eq"],["DRG","fn"],["i","fn"],["+","op"]
+  ];
+  return `<div class="scicalc" id="scientificCalc">
+    <div class="scicalc-screen">
+      <div class="scicalc-mode" id="scMode">DEG • NORMAL</div>
+      <div class="scicalc-expression" id="scExpr">0</div>
+      <div class="scicalc-value" id="scValue">0</div>
+    </div>
+    <div class="scicalc-grid">${keys.map(k=>`<button type="button" class="scikey ${k[1]}" data-key="${esc(k[0])}">${esc(k[0])}</button>`).join("")}</div>
+    <div class="game-screen" id="calcGameScreen" style="display:none">
+      <canvas id="calcGameCanvas" width="560" height="300"></canvas>
+    </div>
+    <div class="game-controls" id="calcGameControls" style="display:none">
+      <button type="button" onclick="calcGameInput('up')">▲</button>
+      <button type="button" onclick="calcGameInput('action')" aria-label="Rotate">↻</button>
+      <button type="button" onclick="calcGameInput('down')">▼</button>
+      <button type="button" onclick="calcGameInput('left')">◀</button>
+      <button type="button" onclick="calcGameInput('right')">▶</button>
+      <button type="button" class="wide" onclick="calcGameInput('action2')" aria-label="Hard drop or restart">DROP / RESET</button>
+    </div>
+    <div id="calcExitArea" style="display:none;margin-top:10px;text-align:center">
+      <button type="button" class="secondary" onclick="stopCalcGame()">← Back to Calculator</button>
+    </div>
+    <div class="calc-status" id="scStatus">Keyboard: numbers, operators, arrows, Enter and Space.</div>
+    <div class="scicalc-help">Touch the buttons or use a PC keyboard. DRG cycles DEG / RAD / GRAD.</div>
+  </div>`;
+}
+
+const scState={expr:"",ans:0,mode:"DEG",shift:false,alpha:false,game:null,gameFrame:null,gameKey:null};
+
+function initScientificCalculator(){
+  scState.expr="";scState.ans=0;scState.mode="DEG";scState.shift=false;scState.alpha=false;scState.game=null;
+  updateSciScreen();
+  document.querySelectorAll("#scientificCalc .scikey").forEach(btn=>{btn.onclick=()=>scientificKey(btn.dataset.key)});
+  if(!window.__scCalcKeyHandler){
+    window.__scCalcKeyHandler=e=>{
+      const ws=document.getElementById("workspace");
+      if(!ws?.classList.contains("active") || $("wsTitle")?.textContent!=="Scientific Calculator")return;
+      if(scState.game){ 
+        if(["ArrowUp","w","W"].includes(e.key))calcGameInput("up");
+        else if(["ArrowDown","s","S"].includes(e.key))calcGameInput("down");
+        else if(["ArrowLeft","a","A"].includes(e.key))calcGameInput("left");
+        else if(["ArrowRight","d","D"].includes(e.key))calcGameInput("right");
+        else if(["Enter"," "].includes(e.key))calcGameInput("action");
+        e.preventDefault(); return;
+      }
+      const map={"*":"×","/":"÷","-":"−","Enter":"=","Backspace":"⌫"};
+      if(map[e.key])scientificKey(map[e.key]);
+      else if(/^[0-9.]$/.test(e.key))scientificKey(e.key);
+      else if(/^[+%(),]$/.test(e.key))scientificKey(e.key);
+      else if(e.key.toLowerCase()==="p")scientificKey("π");
+    };
+    document.addEventListener("keydown",window.__scCalcKeyHandler);
+  }
+}
+
+function updateSciScreen(){
+  const e=$("scExpr"),v=$("scValue"),m=$("scMode");if(!e||!v)return;
+  e.textContent=scState.expr||"0";
+  v.textContent=scState.ans!==null && scState.expr==="" ? formatSci(scState.ans) : (scState.expr||"0");
+  m.textContent=`${scState.mode} • ${scState.shift?"SHIFT ":""}${scState.alpha?"ALPHA ":""}NORMAL`;
+}
+function formatSci(v){
+  if(typeof v!=="number"||!Number.isFinite(v))return String(v);
+  const a=Math.abs(v);
+  if(a!==0&&(a>=1e10||a<1e-8))return v.toExponential(8).replace(/\.?0+e/,"e");
+  return Number(v.toPrecision(12)).toString();
+}
+function scientificKey(k){
+  if(scState.game)return calcGameInput(k);
+  if(k==="SHIFT"){scState.shift=!scState.shift;updateSciScreen();return}
+  if(k==="ALPHA"){scState.alpha=!scState.alpha;updateSciScreen();return}
+  if(k==="MODE"){scState.mode=scState.mode==="DEG"?"RAD":scState.mode==="RAD"?"GRAD":"DEG";updateSciScreen();return}
+  if(k==="SETUP"){toast("Setup: DEG/RAD/GRAD, angle mode and display controls are available from the keypad.");return}
+  if(k==="Ans"){scState.expr+=formatSci(scState.ans);updateSciScreen();return}
+  if(k==="AC"){scState.expr="";scState.ans=0;updateSciScreen();return}
+  if(k==="DEL"){scState.expr=scState.expr.slice(0,-1);updateSciScreen();return}
+  if(k==="DRG"){scState.mode=scState.mode==="DEG"?"RAD":scState.mode==="RAD"?"GRAD":"DEG";updateSciScreen();return}
+  if(k==="π"){scState.expr+="π";updateSciScreen();return}
+  if(k==="e"){scState.expr+="e";updateSciScreen();return}
+  if(k==="√"){scState.expr+="sqrt(";updateSciScreen();return}
+  if(k==="sin"||k==="cos"||k==="tan"||k==="sinh"||k==="cosh"||k==="tanh"||k==="log"||k==="ln"||k==="10ˣ"||k==="eˣ"){
+    const fn={"10ˣ":"pow10","eˣ":"exp"}[k]||k;scState.expr+=fn+"(";updateSciScreen();return;
+  }
+  if(k==="sin⁻¹"||k==="cos⁻¹"||k==="tan⁻¹"){scState.expr+={"sin⁻¹":"asin","cos⁻¹":"acos","tan⁻¹":"atan"}[k]+"(";updateSciScreen();return}
+  if(k==="x²"){scState.expr+="^2";updateSciScreen();return}
+  if(k==="x³"){scState.expr+="^3";updateSciScreen();return}
+  if(k==="xʸ"){scState.expr+="^";updateSciScreen();return}
+  if(k==="1/x"){scState.expr+="inv(";updateSciScreen();return}
+  if(k==="n!"){scState.expr+="fact(";updateSciScreen();return}
+  if(k==="nCr"){scState.expr+="ncr(";updateSciScreen();return}
+  if(k==="nPr"){scState.expr+="npr(";updateSciScreen();return}
+  if(k==="Ran#"){scState.expr+="rand(";updateSciScreen();return}
+  if(k==="EXP"){scState.expr+="e";updateSciScreen();return}
+  if(k==="ENG"){scState.expr+="e";updateSciScreen();return}
+  if(k==="%"){scState.expr+="%";updateSciScreen();return}
+  if(k==="×"||k==="÷"||k==="−"||k==="+"||k==="("||k===")"||k==="."||k===","||/^\d+$/.test(k)){scState.expr+=k;updateSciScreen();return}
+  if(k==="="){evaluateScientific();return}
+  if(k==="STO"||k==="i"){toast("Memory/complex entry is available through expression input; use Ans for the last result.");return}
+}
+
+function angleRad(x){
+  if(scState.mode==="RAD")return x;
+  if(scState.mode==="GRAD")return x*Math.PI/200;
+  return x*Math.PI/180;
+}
+function fromRad(x){
+  if(scState.mode==="RAD")return x;
+  if(scState.mode==="GRAD")return x*200/Math.PI;
+  return x*180/Math.PI;
+}
+function fact(n){n=Math.round(n);if(n<0||n>170)throw new Error("factorial range");let r=1;for(let i=2;i<=n;i++)r*=i;return r}
+function ncr(n,r){return fact(n)/(fact(r)*fact(n-r))}
+function npr(n,r){return fact(n)/fact(n-r)}
+function evalScientificExpression(expr){
+  let x=expr.replace(/×/g,"*").replace(/÷/g,"/").replace(/−/g,"-").replace(/π/g,"PI").replace(/\^/g,"**").replace(/%/g,"/100");
+  if(!/^[0-9A-Za-z_+*/().,\s%-]+$/.test(x))throw new Error("invalid");
+  const scope={
+    PI:Math.PI,E:Math.E,
+    sin:v=>Math.sin(angleRad(v)),cos:v=>Math.cos(angleRad(v)),tan:v=>Math.tan(angleRad(v)),
+    asin:v=>fromRad(Math.asin(v)),acos:v=>fromRad(Math.acos(v)),atan:v=>fromRad(Math.atan(v)),
+    sinh:Math.sinh,cosh:Math.cosh,tanh:Math.tanh,
+    log:v=>Math.log10(v),ln:Math.log,sqrt:Math.sqrt,pow10:v=>10**v,exp:Math.exp,
+    inv:v=>1/v,abs:Math.abs,floor:Math.floor,ceil:Math.ceil,round:Math.round,fact,ncr,npr,rand:Math.random
+  };
+  const names=Object.keys(scope),vals=Object.values(scope);
+  return Function(...names,`"use strict"; return (${x});`)(...vals);
+}
+function evaluateScientific(){
+  if(scState.expr==="1+"){startCalcGame("shooter");return}
+  if(scState.expr==="2+"){startCalcGame("snake");return}
+  if(scState.expr==="3+"){startCalcGame("tetris");return}
+  if(scState.expr==="4+"){startCalcGame("runner");return}
+  if(!scState.expr)return;
+  try{
+    const val=evalScientificExpression(scState.expr);
+    if(!Number.isFinite(val))throw new Error("not finite");
+    scState.ans=val;scState.expr="";updateSciScreen();
+  }catch(e){scState.ans="Error";updateSciScreen();setTimeout(()=>{scState.ans=0;scState.expr="";updateSciScreen()},1000)}
+}
+
+function startCalcGame(id){
+  if(scState.game)stopCalcGame();
+  scState.game=id;
+  $("calcGameScreen").style.display="block";
+  $("calcGameControls").style.display="grid";
+  $("calcExitArea").style.display="block";
+  $("scStatus").textContent="Interactive mode";
+  const c=$("calcGameCanvas"),ctx=c.getContext("2d");
+  if(scState.gameFrame)cancelAnimationFrame(scState.gameFrame);
+  const games={shooter:initSpaceShooter,snake:initSnakeGame,tetris:initTetrisGame,runner:initRunnerGame};
+  if(games[id]){
+    try{games[id](c,ctx);}catch(err){console.error(err);stopCalcGame();toast("Calculator game could not start");}
+  }
+}
+function stopCalcGame(){
+  scState.expr="";
+  if(scState.gameFrame)cancelAnimationFrame(scState.gameFrame);
+  scState.gameFrame=null;
+  scState.game=null;
+  scState.gameKey=null;
+  if($("calcGameScreen"))$("calcGameScreen").style.display="none";
+  if($("calcGameControls"))$("calcGameControls").style.display="none";
+  if($("calcExitArea"))$("calcExitArea").style.display="none";
+  if($("scStatus"))$("scStatus").textContent="Keyboard: numbers, operators, arrows, Enter and Space.";
+  updateSciScreen();
+}
+function calcGameInput(action){if(!scState.game)return;const ev=scState.gameKey;if(ev)ev(action);}
+function gameCanvasSetup(c,ctx){c.width=560;c.height=300;ctx.imageSmoothingEnabled=false;}
+function initSpaceShooter(c,ctx){
+  gameCanvasSetup(c,ctx);let ship={x:72,y:145,w:24,h:14},shots=[],enemies=[],enemyShots=[],score=0,last=0,spawn=0,stars=[];
+  for(let i=0;i<35;i++)stars.push({x:Math.random()*560,y:Math.random()*300,s:1+Math.random()*3});
+  function key(a){if(a==="up")ship.y=Math.max(18,ship.y-18);if(a==="down")ship.y=Math.min(268,ship.y+18);if(a==="left")ship.x=Math.max(16,ship.x-18);if(a==="right")ship.x=Math.min(420,ship.x+18);if(a==="action"||a==="action2")shots.push({x:ship.x+22,y:ship.y+6})}
+  scState.gameKey=key;
+  function frame(t){
+    if(!scState.game)return;
+    if(t-last>16){last=t;shots.forEach(b=>b.x+=8);shots=shots.filter(b=>b.x<560);enemies.forEach(e=>{e.x-=e.v;if(Math.random()<.01)enemyShots.push({x:e.x,y:e.y+5})});enemyShots.forEach(b=>b.x-=6);enemyShots=enemyShots.filter(b=>b.x>0);
+      if(t-spawn>650){spawn=t;enemies.push({x:560,y:25+Math.random()*240,w:22,h:15,v:1.5+Math.random()*2})}
+      for(const b of shots)for(const e of enemies)if(!e.dead&&b.x<e.x+e.w&&b.x+6>e.x&&b.y<e.y+e.h&&b.y+4>e.y){e.dead=true;b.dead=true;score++}
+      shots=shots.filter(b=>!b.dead);enemies=enemies.filter(e=>!e.dead);
+      for(const b of enemyShots)if(b.x<ship.x+ship.w&&b.x+5>ship.x&&b.y<ship.y+ship.h&&b.y+4>ship.y){score=0;shots=[];enemies=[];enemyShots=[];ship.x=72;ship.y=145;break}
+    }
+    ctx.fillStyle="#050a12";ctx.fillRect(0,0,560,300);ctx.fillStyle="#dcecff";stars.forEach(st=>{st.x-=st.s;if(st.x<0)st.x=560;ctx.fillRect(st.x,st.y,Math.max(1,st.s/2),Math.max(1,st.s/2))});
+    ctx.fillStyle="#79d5ff";ctx.fillRect(ship.x,ship.y,ship.w,ship.h);ctx.fillRect(ship.x+21,ship.y+5,8,4);ctx.fillStyle="#fff";shots.forEach(b=>ctx.fillRect(b.x,b.y,7,3));ctx.fillStyle="#ff6b6b";enemies.forEach(e=>{ctx.fillRect(e.x,e.y,e.w,e.h);ctx.fillRect(e.x-6,e.y+5,6,4)});ctx.fillStyle="#ffd166";enemyShots.forEach(b=>ctx.fillRect(b.x,b.y,5,3));ctx.fillStyle="#fff";ctx.font="15px monospace";ctx.fillText("SCORE "+score,10,20);
+    scState.gameFrame=requestAnimationFrame(frame)
+  }scState.gameFrame=requestAnimationFrame(frame)
+}
+function initSnakeGame(c,ctx){
+  gameCanvasSetup(c,ctx);
+  const cols=28,rows=15,cell=20;
+  let snake=[{x:8,y:7},{x:7,y:7},{x:6,y:7}],dir={x:1,y:0},next=dir,food={x:18,y:7},score=0,last=0;
+  function spawn(){do{food={x:Math.floor(Math.random()*cols),y:Math.floor(Math.random()*rows)}}while(snake.some(p=>p.x===food.x&&p.y===food.y))}
+  function key(a){if(a==="up"&&dir.y!==1)next={x:0,y:-1};if(a==="down"&&dir.y!==-1)next={x:0,y:1};if(a==="left"&&dir.x!==1)next={x:-1,y:0};if(a==="right"&&dir.x!==-1)next={x:1,y:0};if(a==="action"||a==="action2"){snake=[{x:8,y:7},{x:7,y:7},{x:6,y:7}];dir={x:1,y:0};next=dir;score=0;spawn()}}
+  scState.gameKey=key;
+  function frame(t){
+    if(!scState.game)return;
+    if(t-last>105){last=t;dir=next;const h={x:(snake[0].x+dir.x+cols)%cols,y:(snake[0].y+dir.y+rows)%rows};
+      if(snake.some(p=>p.x===h.x&&p.y===h.y)){key("action");}
+      else{snake.unshift(h);if(h.x===food.x&&h.y===food.y){score++;spawn()}else snake.pop()}
+    }
+    ctx.fillStyle="#07100a";ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle="#5ad85a";ctx.fillRect(food.x*cell,food.y*cell,cell-2,cell-2);
+    snake.forEach((p,i)=>{ctx.fillStyle=i?"#65a765":"#d9ffd9";ctx.fillRect(p.x*cell,p.y*cell,cell-2,cell-2)});
+    ctx.fillStyle="#fff";ctx.font="16px monospace";ctx.fillText("SCORE "+score,10,20);
+    scState.gameFrame=requestAnimationFrame(frame);
+  } scState.gameFrame=requestAnimationFrame(frame);
+}
+function initTetrisGame(c,ctx){
+  gameCanvasSetup(c,ctx);
+  const COLS=10, ROWS=20, CELL=14;
+  const ox=Math.floor((c.width-COLS*CELL)/2)-35, oy=8;
+  const colors=["#68dff5","#5e8cff","#bd7bff","#ffd166","#63e6be","#ff7aa8","#ff9f43"];
+  const PIECES=[[[1,1,1,1]],[[1,0,0],[1,1,1]],[[0,0,1],[1,1,1]],[[1,1],[1,1]],[[0,1,1],[1,1,0]],[[0,1,0],[1,1,1]],[[1,1,0],[0,1,1]]];
+  const state={board:Array.from({length:ROWS},()=>Array(COLS).fill(0)),current:null,next:null,score:0,lines:0,level:1,fallTimer:0,lastTime:0,over:false,paused:false};
+  function randPiece(){const n=Math.floor(Math.random()*PIECES.length);return {shape:PIECES[n].map(r=>r.slice()),color:n+1};}
+  function spawn(){const p=state.next||randPiece();state.next=randPiece();state.current={shape:p.shape,color:p.color,x:Math.floor((COLS-p.shape[0].length)/2),y:0};if(collides(state.current,state.current.x,state.current.y,state.current.shape)){state.over=true;}}
+  function collides(piece,x,y,shape){for(let py=0;py<shape.length;py++){for(let px=0;px<shape[py].length;px++){if(!shape[py][px])continue;const bx=x+px,by=y+py;if(bx<0||bx>=COLS||by>=ROWS)return true;if(by>=0&&state.board[by][bx])return true;}}return false;}
+  function merge(){const p=state.current;for(let py=0;py<p.shape.length;py++){for(let px=0;px<p.shape[py].length;px++){if(p.shape[py][px]){const by=p.y+py,bx=p.x+px;if(by>=0)state.board[by][bx]=p.color;}}}}
+  function clearLines(){let cleared=0;state.board=state.board.filter(row=>{if(row.every(Boolean)){cleared++;return false}return true;});while(state.board.length<ROWS)state.board.unshift(Array(COLS).fill(0));if(cleared){const values=[0,100,300,500,800];state.score+=values[cleared]*state.level;state.lines+=cleared;state.level=1+Math.floor(state.lines/10);}}
+  function lock(){merge();clearLines();spawn();state.fallTimer=0;}
+  function move(dx){if(state.over||state.paused)return;const p=state.current;if(!collides(p,p.x+dx,p.y,p.shape))p.x+=dx;}
+  function softDrop(){if(state.over||state.paused)return;const p=state.current;if(!collides(p,p.x,p.y+1,p.shape)){p.y++;state.score+=1;}else{lock();}state.fallTimer=0;}
+  function hardDrop(){if(state.over||state.paused)return;const p=state.current;let distance=0;while(!collides(p,p.x,p.y+1,p.shape)){p.y++;distance++}state.score+=distance*2;lock();}
+  function rotate(){if(state.over||state.paused)return;const p=state.current;const h=p.shape.length,w=p.shape[0].length;const rotated=Array.from({length:w},()=>Array(h).fill(0));for(let y=0;y<h;y++)for(let x=0;x<w;x++)rotated[x][h-1-y]=p.shape[y][x];for(const kick of [0,-1,1,-2,2]){if(!collides(p,p.x+kick,p.y,rotated)){p.shape=rotated;p.x+=kick;return;}}}
+  function reset(){state.board=Array.from({length:ROWS},()=>Array(COLS).fill(0));state.current=null;state.next=null;state.score=0;state.lines=0;state.level=1;state.fallTimer=0;state.lastTime=0;state.over=false;state.paused=false;spawn();}
+  function key(action){if(action==="action"||action==="action2"||action==="up"||action==="rotate"){if(state.over){reset();return}rotate();return;}if(action==="left"){move(-1);return}if(action==="right"){move(1);return}if(action==="down"){softDrop();return}if(action==="hard"){hardDrop();return}}
+  scState.gameKey=key;reset();
+  function cell(x,y,color,alpha=1){ctx.save();ctx.globalAlpha=alpha;ctx.fillStyle=colors[color-1]||"#fff";ctx.fillRect(ox+x*CELL+1,oy+y*CELL+1,CELL-2,CELL-2);ctx.fillStyle="rgba(255,255,255,.18)";ctx.fillRect(ox+x*CELL+2,oy+y*CELL+2,CELL-5,2);ctx.restore();}
+  function drawText(x,y,text,size=13){ctx.fillStyle="#fff";ctx.font=`${size}px monospace`;ctx.fillText(text,x,y);}
+  function draw(){
+    ctx.fillStyle="#07100a";ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle="#111c15";ctx.fillRect(ox,oy,COLS*CELL,ROWS*CELL);ctx.strokeStyle="rgba(255,255,255,.04)";ctx.lineWidth=1;
+    for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++){ctx.strokeRect(ox+x*CELL,oy+y*CELL,CELL,CELL);if(state.board[y][x])cell(x,y,state.board[y][x]);}
+    if(state.current&&!state.over){const p=state.current;let gy=p.y;while(!collides(p,p.x,gy+1,p.shape))gy++;for(let py=0;py<p.shape.length;py++)for(let px=0;px<p.shape[py].length;px++)if(p.shape[py][px]&&gy+py>=0)cell(p.x+px,gy+py,p.color,.22);}
+    if(state.current&&!state.over){const p=state.current;for(let py=0;py<p.shape.length;py++)for(let px=0;px<p.shape[py].length;px++)if(p.shape[py][px]&&p.y+py>=0)cell(p.x+px,p.y+py,p.color);}
+    const sx=330;drawText(sx,28,"TETRIS",16);drawText(sx,52,"SCORE "+state.score);drawText(sx,72,"LINES "+state.lines);drawText(sx,92,"LEVEL "+state.level);drawText(sx,120,"NEXT");
+    if(state.next){for(let py=0;py<state.next.shape.length;py++)for(let px=0;px<state.next.shape[py].length;px++){if(state.next.shape[py][px]){ctx.fillStyle=colors[state.next.color-1];ctx.fillRect(sx+px*10,132+py*10,9,9);}}}
+    drawText(sx,188,"← → MOVE",11);drawText(sx,204,"↓ SOFT DROP",11);drawText(sx,220,"ENTER ROTATE",11);drawText(sx,236,"SPACE HARD DROP",11);
+    if(state.paused){ctx.fillStyle="rgba(0,0,0,.72)";ctx.fillRect(ox,oy,COLS*CELL,ROWS*CELL);drawText(ox+40,oy+140,"PAUSED",18);}
+    if(state.over){ctx.fillStyle="rgba(0,0,0,.78)";ctx.fillRect(ox,oy,COLS*CELL,ROWS*CELL);drawText(ox+24,oy+120,"GAME OVER",18);drawText(ox+14,oy+142,"ENTER = RESTART",11);}
+  }
+  function frame(t){
+    if(!scState.game)return;
+    if(!state.lastTime)state.lastTime=t;const delta=t-state.lastTime;state.lastTime=t;
+    if(!state.over&&!state.paused){state.fallTimer+=delta;const interval=Math.max(80,720-(state.level-1)*55);if(state.fallTimer>=interval){softDrop();}}
+    draw();scState.gameFrame=requestAnimationFrame(frame);
+  }
+  scState.gameFrame=requestAnimationFrame(frame);
+}
+function initRunnerGame(c,ctx){
+  gameCanvasSetup(c,ctx);let y=250,vy=0,ground=250,obs=[],score=0,last=0,spawn=0;
+  function key(a){if((a==="action"||a==="up")&&y>=ground){vy=-8.5}if(a==="action2"){y=ground;vy=0;obs=[];score=0}}
+  scState.gameKey=key;
+  function frame(t){if(!scState.game)return;
+    if(t-last>16){last=t;vy+=.42;y+=vy;if(y>ground){y=ground;vy=0}obs.forEach(o=>o.x-=4);obs=obs.filter(o=>o.x>-30);score+=.03}
+    if(t-spawn>800){spawn=t;obs.push({x:560,w:18+Math.random()*18,h:25+Math.random()*35})}
+    for(const o of obs)if(36<o.x+o.w&&50>o.x&&y+18>ground-o.h){key("action2");break}
+    ctx.fillStyle="#07100a";ctx.fillRect(0,0,560,300);ctx.fillStyle="#425942";ctx.fillRect(0,ground+18,560,3);ctx.fillStyle="#d9ffd9";ctx.fillRect(36,y,18,18);ctx.fillStyle="#ff9d6b";obs.forEach(o=>ctx.fillRect(o.x,ground+18-o.h,o.w,o.h));ctx.fillStyle="#fff";ctx.font="16px monospace";ctx.fillText("SCORE "+Math.floor(score),10,20);
+    scState.gameFrame=requestAnimationFrame(frame)
+  }scState.gameFrame=requestAnimationFrame(frame)
+}
+
+function metadataPlusUI(name){
+  const accept=name==="Image EXIF & GPS Cleaner"?"image/*":name==="PDF Document Properties Cleaner"?"application/pdf,.pdf":name==="Office Author & Revision Cleaner"?".docx,.pptx,.xlsx":name==="Audio Metadata Cleaner"?"audio/*":name==="Video Container Metadata Cleaner"?"video/*":"*";
+  let action=name==="Image EXIF & GPS Cleaner"?"runImageExifCleaner()":name==="PDF Document Properties Cleaner"?"runPdfMetadataCleaner()":name==="Office Author & Revision Cleaner"?"runOfficeMetadataCleaner()":name==="Audio Metadata Cleaner"?"runAudioMetadataCleaner()":name==="Video Container Metadata Cleaner"?"runVideoMetadataCleaner()":"runGeneralMetadataReport()";
+  return `<div class="drop glass" id="metadataPlusDrop"><input id="metadataPlusFile" type="file" accept="${accept}"><b>Choose a file</b><div id="metadataPlusName" style="margin-top:8px;font-weight:700;color:var(--accent)"></div></div><div class="actions"><button class="primary" onclick="${action}">${name==="General Metadata Report"?"Inspect Metadata":"Clean Metadata"}</button><button class="secondary" onclick="metadataPlusReset()">Clear</button></div><div id="metadataPlusResult"></div><p class="muted" style="font-size:12px;margin-top:10px">Only metadata that the browser can actually read and safely rewrite is changed. The original file is never modified.</p>`;
+}
+function setupMetadataPlusDrop(){const input=$("metadataPlusFile"),name=$("metadataPlusName");if(!input)return;input.onchange=()=>{const f=input.files?.[0];if(name)name.textContent=f?`${f.name} • ${(f.size/1024/1024).toFixed(2)} MB`:""};}
+function metadataPlusReset(){if($("metadataPlusFile"))$("metadataPlusFile").value="";if($("metadataPlusName"))$("metadataPlusName").textContent="";if($("metadataPlusResult"))$("metadataPlusResult").innerHTML="";}
+function metadataPlusFile(){const f=$("metadataPlusFile")?.files?.[0];if(!f)toast("Choose a file first");return f;}
+function metadataPlusResult(html){if($("metadataPlusResult"))$("metadataPlusResult").innerHTML=html;}
+
+async function runImageExifCleaner(){
+  const f=metadataPlusFile();if(!f)return;if(!f.type.startsWith("image/"))return toast("Choose an image");
+  try{
+    const before=window.exifr?await exifr.parse(f,{gps:true,tiff:true,exif:true,iptc:true,xmp:true}):{};
+    const im=await loadImage(f),canvas=document.createElement("canvas");canvas.width=im.naturalWidth;canvas.height=im.naturalHeight;
+    const ctx=canvas.getContext("2d");if(f.type==="image/jpeg"){ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height)}ctx.drawImage(im,0,0);
+    const outputType=f.type==="image/png"?"image/png":"image/jpeg";
+    canvas.toBlob(blob=>{
+      const ext=outputType==="image/png"?"png":"jpg";downloadBlob(blob,`${f.name.replace(/\.[^.]+$/,"")}-metadata-clean.${ext}`);
+      const count=Object.keys(before||{}).length;
+      metadataPlusResult(`<div class="result glass"><b>✓ Clean image created</b><br>Readable metadata fields detected before cleaning: ${count}.<br>The image was re-encoded from its pixels, so common EXIF/GPS/IPTC/XMP/container metadata is not copied into the new file.<div class="clean-list"><div class="clean-row"><span>EXIF / GPS</span><span>Not copied</span></div><div class="clean-row"><span>Camera / device tags</span><span>Not copied</span></div><div class="clean-row"><span>Software / author tags</span><span>Not copied</span></div><div class="clean-row"><span>Original file</span><span>Unchanged</span></div></div></div>`);
+    },outputType,.95);
+  }catch(e){toast("Image cleaning failed")}
+}
+
+async function runPdfMetadataCleaner(){
+  const f=metadataPlusFile();if(!f)return;
+  try{
+    if(!window.PDFLib)return toast("PDF engine is unavailable");
+    const doc=await PDFLib.PDFDocument.load(await f.arrayBuffer());
+    doc.setTitle("");doc.setAuthor("");doc.setSubject("");doc.setKeywords([]);doc.setCreator("");doc.setProducer("");
+    const bytes=await doc.save();downloadBlob(new Blob([bytes],{type:"application/pdf"}),`${f.name.replace(/\.[^.]+$/,"")}-metadata-clean.pdf`);
+    metadataPlusResult(`<div class="result glass"><b>✓ Clean PDF created</b><div class="clean-list"><div class="clean-row"><span>Author</span><span>Cleared</span></div><div class="clean-row"><span>Creator</span><span>Cleared</span></div><div class="clean-row"><span>Producer</span><span>Cleared</span></div><div class="clean-row"><span>Title / Subject / Keywords</span><span>Cleared</span></div></div></div>`);
+  }catch(e){toast("PDF metadata cleaning failed")}
+}
+
+async function runOfficeMetadataCleaner(){
+  const f=metadataPlusFile();if(!f)return;
+  const ext=f.name.split(".").pop().toLowerCase();if(!["docx","pptx","xlsx"].includes(ext))return toast("Choose DOCX, PPTX or XLSX");
+  if(!window.JSZip)return toast("Office ZIP engine is unavailable");
+  try{
+    const zip=await JSZip.loadAsync(await f.arrayBuffer()),core="docProps/core.xml",app="docProps/app.xml",custom="docProps/custom.xml";
+    const emptyCore=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"></cp:coreProperties>`;
+    if(zip.file(core))zip.file(core,emptyCore);
+    if(zip.file(app)){let x=await zip.file(app).async("string");x=x.replace(/<Application>[\s\S]*?<\/Application>/gi,"<Application></Application>").replace(/<Company>[\s\S]*?<\/Company>/gi,"<Company></Company>").replace(/<AppVersion>[\s\S]*?<\/AppVersion>/gi,"<AppVersion></AppVersion>");zip.file(app,x);}
+    if(zip.file(custom))zip.remove(custom);
+    ["docProps/thumbnail.jpeg","docProps/thumbnail.png"].forEach(x=>{if(zip.file(x))zip.remove(x)});
+    const blob=await zip.generateAsync({type:"blob"});downloadBlob(blob,`${f.name.replace(/\.[^.]+$/,"")}-metadata-clean.${ext}`);
+    metadataPlusResult(`<div class="result glass"><b>✓ ${ext.toUpperCase()} clean copy created</b><div class="clean-list"><div class="clean-row"><span>Author / last editor</span><span>Cleared where stored in core properties</span></div><div class="clean-row"><span>Application / company</span><span>Cleared where present</span></div><div class="clean-row"><span>Custom properties</span><span>Removed</span></div><div class="clean-row"><span>Original document</span><span>Unchanged</span></div></div></div>`);
+  }catch(e){toast("Office metadata cleaning failed")}
+}
+
+async function runAudioMetadataCleaner(){
+  const f=metadataPlusFile();if(!f)return;if(!f.type.startsWith("audio/"))return toast("Choose an audio file");
+  try{
+    const AC=window.AudioContext||window.webkitAudioContext;if(!AC)throw new Error("AudioContext unavailable");
+    const ac=new AC(),buffer=await ac.decodeAudioData(await f.arrayBuffer()),wav=audioBufferToWav(buffer);await ac.close();
+    downloadBlob(new Blob([wav],{type:"audio/wav"}),`${f.name.replace(/\.[^.]+$/,"")}-metadata-clean.wav`);
+    metadataPlusResult(`<div class="result glass"><b>✓ Clean WAV sharing copy created</b><div class="clean-list"><div class="clean-row"><span>Source metadata</span><span>Not copied into WAV</span></div><div class="clean-row"><span>Audio samples</span><span>Preserved through decode/re-encode</span></div><div class="clean-row"><span>Original file</span><span>Unchanged</span></div></div><p class="muted">The output is WAV rather than the original compressed format because browser-side rewriting of every audio container is not universally supported.</p></div>`);
+  }catch(e){toast("This audio format cannot be decoded by this browser")}
+}
+
+function audioBufferToWav(buffer){
+  const channels=buffer.numberOfChannels,sampleRate=buffer.sampleRate,frames=buffer.length,bytesPerSample=2,blockAlign=channels*bytesPerSample,dataSize=frames*blockAlign,buf=new ArrayBuffer(44+dataSize),view=new DataView(buf);let p=0;
+  const w=(str)=>{for(let i=0;i<str.length;i++)view.setUint8(p++,str.charCodeAt(i))};const u32=v=>{view.setUint32(p,v,true);p+=4},u16=v=>{view.setUint16(p,v,true);p+=2};
+  w("RIFF");u32(36+dataSize);w("WAVE");w("fmt ");u32(16);u16(1);u16(channels);u32(sampleRate);u32(sampleRate*blockAlign);u16(blockAlign);u16(16);w("data");u32(dataSize);
+  const data=[];for(let ch=0;ch<channels;ch++)data.push(buffer.getChannelData(ch));
+  for(let i=0;i<frames;i++)for(let ch=0;ch<channels;ch++){let s=Math.max(-1,Math.min(1,data[ch][i]));view.setInt16(p,s<0?s*0x8000:s*0x7fff,true);p+=2;}
+  return buf;
+}
+
+async function runVideoMetadataCleaner(){
+  const f=metadataPlusFile();if(!f)return;if(!f.type.startsWith("video/"))return toast("Choose a video");
+  if(!HTMLVideoElement.prototype.captureStream && !HTMLVideoElement.prototype.webkitCaptureStream) return toast("This browser cannot re-encode video locally");
+  try{
+    const v=document.createElement("video"),url=URL.createObjectURL(f);v.src=url;v.muted=true;v.playsInline=true;v.preload="auto";
+    await new Promise((res,rej)=>{v.onloadedmetadata=res;v.onerror=rej});
+    const stream=v.captureStream?v.captureStream():v.webkitCaptureStream(),mime=["video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"].find(x=>MediaRecorder.isTypeSupported(x));
+    if(!mime)throw new Error("No supported MediaRecorder format");
+    const rec=new MediaRecorder(stream,{mimeType:mime,bitsPerSecond:5000000}),chunks=[];rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+    const stopped=new Promise((res,rej)=>{rec.onstop=res;rec.onerror=rej});rec.start(1000);await v.play();v.onended=()=>rec.stop();await stopped;
+    downloadBlob(new Blob(chunks,{type:mime}),`${f.name.replace(/\.[^.]+$/,"")}-metadata-clean.webm`);URL.revokeObjectURL(url);
+    metadataPlusResult(`<div class="result glass"><b>✓ New video stream created</b><div class="clean-list"><div class="clean-row"><span>Original container metadata</span><span>Not deliberately copied</span></div><div class="clean-row"><span>Output</span><span>Fresh WebM stream</span></div><div class="clean-row"><span>Original file</span><span>Unchanged</span></div></div><p class="muted">Video container formats vary widely. This browser-side method is available only where local MediaRecorder re-encoding is supported.</p></div>`);
+  }catch(e){toast("Video cleaning failed on this browser")}
+}
+
+async function runGeneralMetadataReport(){
+  const f=metadataPlusFile();if(!f)return;
+  let rows=[["File name",f.name],["MIME type",f.type||"Unknown"],["Size",(f.size/1024/1024).toFixed(3)+" MB"],["Last modified",new Date(f.lastModified).toLocaleString()]],mapLink="";
+  if(f.type.startsWith("image/")&&window.exifr){
+    try{
+      const m=await exifr.parse(f,{gps:true,tiff:true,exif:true,iptc:true,xmp:true}),keys=Object.keys(m||{});rows.push(["Readable embedded fields",String(keys.length)]);
+      ["Make","Model","Software","Artist","Copyright","ImageDescription","DateTimeOriginal","CreateDate","ModifyDate","latitude","longitude"].forEach(k=>{if(m?.[k]!==undefined)rows.push([k,String(m[k])])});
+      if(m?.latitude!=null&&m?.longitude!=null)mapLink=`<a class="map-link" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(m.latitude+","+m.longitude)}">📍 Open GPS location in Google Maps</a>`;
+    }catch{}
+  }
+  metadataPlusResult(`<div class="meta-grid">${rows.map(r=>`<div class="meta-card"><b>${esc(r[0])}</b><span>${esc(r[1])}</span></div>`).join("")}</div>${mapLink}<div class="result glass" style="margin-top:12px"><b>Read-only report</b><br>Unsupported metadata is not guessed or silently removed.</div>`);
+}
+
+function telegramLinkQRUI(){return `<div class="two"><div class="field"><label>Mode</label><select id="tgMode"><option value="phone">Phone number</option><option value="username">Username</option></select></div><div class="field"><label>Country code</label><input id="tgCode" value="91" inputmode="numeric"></div></div><div class="field"><label>Phone number / Username</label><input id="tgTarget" placeholder="9876543210 or username"></div><div class="field"><label>Optional message</label><textarea id="tgMsg"></textarea></div><div class="actions"><button class="primary" onclick="generateTelegramLinkQR()">Generate Link & QR</button></div><div id="tgResult" class="center"></div>`}
+function generateTelegramLinkQR(){const mode=$("tgMode")?.value||'phone',raw=($("tgTarget")?.value||'').trim(),code=($("tgCode")?.value||'').replace(/\D/g,'');if(!raw)return toast('Enter a number or username');let link=mode==='username'?`https://t.me/${raw.replace(/^@/,'')}`:`https://t.me/+${code+raw.replace(/\D/g,'')}`;const msg=($("tgMsg")?.value||'').trim();if(msg)link+=`?text=${encodeURIComponent(msg)}`;$("tgResult").innerHTML=`<div class="result glass" style="margin-bottom:10px;word-break:break-all"><b>Telegram link</b><br>${esc(link)}<div class="actions" style="justify-content:center"><button class="primary" onclick="copyText(${JSON.stringify(link)});toast('✓ Link copied')">Copy Link</button><a class="secondary" href="${esc(link)}" target="_blank" rel="noopener" style="text-decoration:none">Open</a></div></div><div id="tgQrBox" class="qrbox"></div>`;if(window.QRCode)new QRCode($("tgQrBox"),{text:link,width:240,height:240,correctLevel:QRCode.CorrectLevel.M})}
+function aiProvenanceUI(name){
+  const cfg={"AI Image Provenance Cleaner":["image/*","runAIProvImage()","image"],"AI Video Provenance Cleaner":["video/*","runAIProvVideo()","video"],"AI PDF Provenance Cleaner":["application/pdf,.pdf","runAIProvPDF()","PDF"],"AI DOCX Provenance Cleaner":[".docx","runAIProvOffice('docx')","DOCX"],"AI PPTX Provenance Cleaner":[".pptx","runAIProvOffice('pptx')","PPTX"],"AI XLSX Provenance Cleaner":[".xlsx","runAIProvOffice('xlsx')","XLSX"],"AI Audio Provenance Cleaner":["audio/*","runAIProvAudio()","audio"],"AI File Provenance Cleaner":["*/*","runAIProvGeneric()","file"]};
+  const c=cfg[name];return `<div class="drop glass"><input id="provFile" type="file" accept="${c[0]}"><b>Choose ${c[2]} file</b><div class="fileMetaLine" id="provInfo">No file selected</div></div><div class="actions"><button class="primary" onclick="${c[1]}">Clean & Download</button></div><div id="provResult"></div><p class="privacyNote">This removes or avoids copying supported metadata/provenance fields. It does not guarantee a third-party AI detector result.</p>`}
+function provFile(){const f=$("provFile")?.files?.[0];if(!f)toast('Choose a file first');return f}function provOut(s){if($("provResult"))$("provResult").innerHTML=s}function provInfo(f){return `<div class="meta-grid"><div class="meta-card"><b>Name</b><span>${esc(f.name)}</span></div><div class="meta-card"><b>Type</b><span>${esc(f.type||'Unknown')}</span></div><div class="meta-card"><b>Size</b><span>${(f.size/1024/1024).toFixed(3)} MB</span></div></div>`}
+async function runAIProvImage(){const f=provFile();if(!f)return;try{const im=await loadImage(f),c=document.createElement('canvas');c.width=im.naturalWidth||im.width;c.height=im.naturalHeight||im.height;const x=c.getContext('2d');if(f.type==='image/jpeg'){x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height)}x.drawImage(im,0,0);const mime=f.type==='image/png'?'image/png':'image/jpeg';c.toBlob(b=>{downloadBlob(b,`${f.name.replace(/\.[^.]+$/,'')}-provenance-clean.${mime==='image/png'?'png':'jpg'}`);provOut(provInfo(f)+`<div class="result glass" style="margin-top:12px"><b>✓ Clean image created.</b><br>Common embedded EXIF/GPS/camera/software/author fields are not copied by the re-encoding step.</div>`)},mime,.95)}catch(e){toast('Image cleaner failed')}}
+async function runAIProvPDF(){const f=provFile();if(!f)return;try{const d=await PDFLib.PDFDocument.load(await f.arrayBuffer());d.setTitle('');d.setAuthor('');d.setSubject('');d.setKeywords([]);d.setCreator('');d.setProducer('');const b=await d.save();downloadBlob(new Blob([b],{type:'application/pdf'}),`${f.name.replace(/\.[^.]+$/,'')}-provenance-clean.pdf`);provOut(provInfo(f)+`<div class="result glass" style="margin-top:12px"><b>✓ PDF properties cleared.</b></div>`)}catch(e){toast('PDF cleaner failed')}}
+async function runAIProvOffice(ext){const f=provFile();if(!f||!window.JSZip)return;try{const z=await JSZip.loadAsync(await f.arrayBuffer());const core='docProps/core.xml',app='docProps/app.xml',custom='docProps/custom.xml';if(z.file(core))z.file(core,`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/"></cp:coreProperties>`);if(z.file(app)){let x=await z.file(app).async('string');x=x.replace(/<Application>[\s\S]*?<\/Application>/gi,'<Application></Application>').replace(/<Company>[\s\S]*?<\/Company>/gi,'<Company></Company>');z.file(app,x)}if(z.file(custom))z.remove(custom);downloadBlob(await z.generateAsync({type:'blob'}),`${f.name.replace(/\.[^.]+$/,'')}-provenance-clean.${ext}`);provOut(provInfo(f)+`<div class="result glass" style="margin-top:12px"><b>✓ ${ext.toUpperCase()} properties cleaned.</b></div>`)}catch(e){toast(`${ext.toUpperCase()} cleaner failed`)}}
+async function runAIProvAudio(){const f=provFile();if(!f)return;try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)throw Error();const ac=new AC(),b=await ac.decodeAudioData(await f.arrayBuffer()),wav=audioBufferToWav(b);await ac.close();downloadBlob(new Blob([wav],{type:'audio/wav'}),`${f.name.replace(/\.[^.]+$/,'')}-provenance-clean.wav`);provOut(provInfo(f)+`<div class="result glass" style="margin-top:12px"><b>✓ Clean WAV created.</b></div>`)}catch(e){toast('Audio format is not decodable by this browser')}}
+async function runAIProvVideo(){const f=provFile();if(!f)return;if(!HTMLVideoElement.prototype.captureStream&&!HTMLVideoElement.prototype.webkitCaptureStream)return toast('Video re-encoding is not supported in this browser');try{const v=document.createElement('video'),url=URL.createObjectURL(f);v.src=url;v.muted=true;v.playsInline=true;await new Promise((r,j)=>{v.onloadedmetadata=r;v.onerror=j});const st=v.captureStream?v.captureStream():v.webkitCaptureStream(),mime=['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'].find(x=>MediaRecorder.isTypeSupported(x));if(!mime)throw Error();const rec=new MediaRecorder(st,{mimeType:mime,bitsPerSecond:5000000}),chunks=[];rec.ondataavailable=e=>e.data.size&&chunks.push(e.data);const done=new Promise((r,j)=>{rec.onstop=r;rec.onerror=j});rec.start(500);await v.play();v.onended=()=>rec.stop();await done;downloadBlob(new Blob(chunks,{type:mime}),`${f.name.replace(/\.[^.]+$/,'')}-provenance-clean.webm`);URL.revokeObjectURL(url);provOut(provInfo(f)+`<div class="result glass" style="margin-top:12px"><b>✓ Fresh video stream created.</b></div>`)}catch(e){toast('Video cleaner failed')}}
+async function runAIProvGeneric(){const f=provFile();if(!f)return;const e=f.name.toLowerCase().split('.').pop();if(f.type.startsWith('image/'))return runAIProvImage();if(e==='pdf'||f.type==='application/pdf')return runAIProvPDF();if(['docx','pptx','xlsx'].includes(e))return runAIProvOffice(e);if(f.type.startsWith('audio/'))return runAIProvAudio();if(f.type.startsWith('video/'))return runAIProvVideo();provOut(provInfo(f)+`<div class="result glass" style="margin-top:12px">This format is not safely rewritable here without a dedicated parser/codec. No blind modification was performed.</div>`)}
+function downloadBlob(blob,name){
+  const u=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=u;a.download=name;document.body.appendChild(a);
+  a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(u),1500);
+}
+
+function openModal(title,body){
+  $("modalTitle").textContent=title;
+  $("modalBody").innerHTML=body;
+  $("modalOverlay").classList.add("open");
+  $("modalOverlay").setAttribute("aria-hidden","false");
+}
+function closeModal(){$("modalOverlay").classList.remove("open");$("modalOverlay").setAttribute("aria-hidden","true")}
+$("modalClose").onclick=closeModal;
+$("modalOverlay").addEventListener("click",e=>{if(e.target===$("modalOverlay"))closeModal()});
+
+const defaultWeather = {
+  active: false, wind: 30, clouds: 50, rain: 60, thunder: 0,
+  moon: { enabled: false, phase: "full", size: 1.15, glow: 0.8, behindClouds: true }
+};
+const wState = JSON.parse(localStorage.getItem('andtools_weather')) || defaultWeather;
+let wCanvas, wCtx, wRaf;
+wState.moon = Object.assign({enabled:false, phase:"full", size:1.15, glow:0.8, behindClouds:true}, wState.moon || {});
+let particles = { clouds: [], rain: [], paneDrops: [] };
+let flashOpacity = 0, sunAngle = 0;
+
+function saveWeather(){localStorage.setItem('andtools_weather', JSON.stringify(wState));}
+function initWeather(){
+  wCanvas = document.getElementById('weatherCanvas');wCtx = wCanvas.getContext('2d');
+  window.addEventListener('resize', resizeWeather);resizeWeather();
+  if(wState.active) toggleWeather(true);
+}
+
+function resizeWeather(){
+  if(!wCanvas) return;
+  wCanvas.width = window.innerWidth;wCanvas.height = window.innerHeight;
+  initParticles();
+}
+
+function initParticles(){
+  particles.clouds = [];particles.rain = [];particles.paneDrops = [];
+  const isMobile = window.innerWidth < 700;
+  const numClouds = isMobile ? 8 : 18;
+  const numRain = isMobile ? 100 : 250;
+  const numPaneDrops = isMobile ? 25 : 70;
+  for(let i=0; i<numClouds; i++) particles.clouds.push({x: Math.random() * window.innerWidth,y: Math.random() * (window.innerHeight * 0.4),r: 60 + Math.random() * 120,speed: 0.15 + Math.random() * 0.4,op: 0.2 + Math.random() * 0.5});
+  for(let i=0; i<numRain; i++) particles.rain.push({x: Math.random() * window.innerWidth,y: Math.random() * window.innerHeight,l: 10 + Math.random() * 25,speed: 12 + Math.random() * 18,w: 1 + Math.random() * 1.5});
+  for(let i=0; i<numPaneDrops; i++) particles.paneDrops.push({x: Math.random() * window.innerWidth,y: Math.random() * window.innerHeight,r: 1 + Math.random() * 2.5,speed: Math.random() * 0.4});
+}
+
+function toggleWeatherShortcut(){toggleWeather(!wState.active);}
+function toggleWeather(state){
+  wState.active = state;saveWeather();
+  if(state){
+    wCanvas.style.display = 'block';
+    if(!wRaf) wRaf = requestAnimationFrame(renderWeather);
+    const cur=localStorage.getItem("andtools_theme")||"dark";
+    if(document.getElementById("darkControls")) document.getElementById("darkControls").style.display = (cur==="dark") ? 'block' : 'none';
+  }else{
+    wCanvas.style.display = 'none';cancelAnimationFrame(wRaf);wRaf = null;
+  }
+}
+
+function moonPhaseShape(ctx, phase, cx, cy, r){
+  if(phase==="full"){ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fill();return;}
+  if(phase==="new"){return;}
+  ctx.save();ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.clip();ctx.fillRect(cx-r,cy-r,2*r,2*r);ctx.globalCompositeOperation="destination-out";
+  if(phase==="half-left")ctx.fillRect(cx,cy-r,r,2*r);else if(phase==="half-right")ctx.fillRect(cx-r,cy-r,r,2*r);else if(phase==="crescent-left"){ctx.beginPath();ctx.arc(cx+r*0.42,cy,r*0.95,0,Math.PI*2);ctx.fill();}else if(phase==="crescent-right"){ctx.beginPath();ctx.arc(cx-r*0.42,cy,r*0.95,0,Math.PI*2);ctx.fill();}else if(phase==="gibbous-left"){ctx.beginPath();ctx.arc(cx+r*0.38,cy,r*0.98,0,Math.PI*2);ctx.fill();}else if(phase==="gibbous-right"){ctx.beginPath();ctx.arc(cx-r*0.38,cy,r*0.98,0,Math.PI*2);ctx.fill();}
+  ctx.restore();
+}
+
+function drawMoon(){
+  if(!wState.moon?.enabled || !wCanvas || !wCtx) return;
+  const w=wCanvas.width,h=wCanvas.height,cx=w*0.83,cy=h*0.18,r=Math.max(28,Math.min(86,58*(Number(wState.moon.size)||1))),glow=Math.max(0,Math.min(1,Number(wState.moon.glow)||0));
+  wCtx.save();wCtx.shadowColor=`rgba(220,230,255,${0.45*glow})`;wCtx.shadowBlur=48*glow;wCtx.fillStyle=`rgba(232,238,255,${0.96})`;moonPhaseShape(wCtx,wState.moon.phase,cx,cy,r);wCtx.restore();
+  if(wState.moon.phase!=="new"){wCtx.save();wCtx.fillStyle="rgba(100,110,130,0.16)";const craters=[[-.28,-.16,.10],[.20,-.28,.08],[.35,.18,.12],[-.05,.30,.07],[-.34,.24,.06],[.05,-.02,.05]];for(const [dx,dy,s] of craters){wCtx.beginPath();wCtx.arc(cx+dx*r,cy+dy*r,s*r,0,Math.PI*2);wCtx.fill();}wCtx.restore();}
+}
+
+function renderWeather(){
+  if(!wState.active) return;
+  const w = wCanvas.width, h = wCanvas.height;
+  wCtx.clearRect(0, 0, w, h);
+  const theme = document.documentElement.dataset.theme || "dark";
+  const dark = theme === "dark";
+  wCtx.fillStyle = dark ? 'rgba(15, 23, 42, 0.5)' : 'rgba(135, 206, 235, 0.5)';
+  wCtx.fillRect(0, 0, w, h);
+  const windFactor = wState.wind / 50;
+
+  if(dark && wState.moon?.enabled && wState.moon?.behindClouds!==false) drawMoon();
+
+  if(!dark){
+     sunAngle += 0.005 * (windFactor || 0.5);
+     wCtx.save();wCtx.translate(w * 0.85, h * 0.2);wCtx.rotate(sunAngle);wCtx.fillStyle = 'rgba(255, 223, 0, 0.7)';wCtx.shadowColor = 'rgba(255, 223, 0, 0.9)';wCtx.shadowBlur = 60;wCtx.beginPath();wCtx.arc(0, 0, 60, 0, Math.PI * 2);wCtx.fill();wCtx.strokeStyle = 'rgba(255, 223, 0, 0.25)';wCtx.lineWidth = 12;
+     for(let i=0; i<12; i++){wCtx.rotate((Math.PI * 2) / 12);wCtx.beginPath();wCtx.moveTo(70, 0);wCtx.lineTo(160, 0);wCtx.stroke();}
+     wCtx.restore();
+  }
+
+  const cloudCount = Math.floor(particles.clouds.length * (wState.clouds / 100));
+  for(let i=0; i<cloudCount; i++){
+     let c = particles.clouds[i];c.x += c.speed * windFactor;if(c.x - c.r > w) c.x = -c.r;
+     wCtx.beginPath();wCtx.arc(c.x, c.y, c.r, 0, Math.PI * 2);wCtx.fillStyle = dark ? `rgba(80, 90, 110, ${c.op * 0.85})` : `rgba(255, 255, 255, ${c.op})`;wCtx.fill();
+  }
+
+  if(dark && wState.moon?.enabled && wState.moon?.behindClouds===false) drawMoon();
+
+  if(dark){
+     if(Math.random() < (wState.thunder / 15000)) flashOpacity = 0.7 + Math.random() * 0.3;
+     if(flashOpacity > 0){wCtx.fillStyle = `rgba(220, 230, 255, ${flashOpacity})`;wCtx.fillRect(0, 0, w, h);flashOpacity -= 0.04;}
+     wCtx.strokeStyle = 'rgba(200, 220, 255, 0.45)';wCtx.lineCap = 'round';const slant = windFactor * 6;const rainCount = Math.floor(particles.rain.length * (wState.rain / 100));
+     for(let i=0; i<rainCount; i++){
+        let r = particles.rain[i];r.x += slant;r.y += r.speed + (windFactor * 2);if(r.y > h){r.y = -r.l; r.x = Math.random() * w;}if(r.x > w){r.x = 0;}
+        wCtx.lineWidth = r.w;wCtx.beginPath();wCtx.moveTo(r.x, r.y);wCtx.lineTo(r.x - slant, r.y - r.l);wCtx.stroke();
+     }
+     wCtx.fillStyle = 'rgba(200, 220, 255, 0.65)';const paneCount = Math.floor(particles.paneDrops.length * (wState.rain / 100));
+     for(let i=0; i<paneCount; i++){let d = particles.paneDrops[i];d.y += d.speed * (wState.rain/50);if(d.y > h){d.y = -10; d.x = Math.random() * w;}wCtx.beginPath();wCtx.arc(d.x, d.y, d.r, 0, Math.PI*2);wCtx.fill();}
+  }
+  wRaf = requestAnimationFrame(renderWeather);
+}
+
+function openWeatherModal() {
+  closeMenu();
+  const isDark = document.documentElement.dataset.theme === "dark";
+  openModal("Weather Effects ⛅", `
+    <div class="field" style="margin-bottom:15px; display:flex; justify-content:space-between; align-items:center; background:var(--surface2); padding:15px; border-radius:12px;">
+      <label style="margin:0; font-size:16px;">Enable Window Weather</label>
+      <input type="checkbox" style="width:24px;height:24px;cursor:pointer;" ${wState.active ? 'checked' : ''} onchange="toggleWeather(this.checked)">
+    </div>
+    <div class="field"><label>Wind Speed / Cloud Movement</label><input type="range" min="0" max="100" value="${wState.wind}" oninput="wState.wind=this.value; saveWeather();"></div>
+    <div class="field" style="margin-top:10px;"><label>Cloud Density</label><input type="range" min="0" max="100" value="${wState.clouds}" oninput="wState.clouds=this.value; saveWeather();"></div>
+    <div id="darkControls" style="display:${isDark ? 'block' : 'none'}; margin-top: 15px; border-top: 1px solid var(--line); padding-top: 15px;">
+      <h4 style="margin:0 0 10px 0; color:var(--accent);">Night & Storm Controls</h4>
+      <div class="field" style="display:flex;justify-content:space-between;align-items:center;background:var(--surface2);padding:10px 12px;border-radius:10px;">
+        <label style="margin:0">Show Moon</label>
+        <input type="checkbox" style="width:22px;height:22px" ${wState.moon.enabled?'checked':''} onchange="wState.moon.enabled=this.checked; saveWeather();">
+      </div>
+      <div class="field" style="margin-top:10px;">
+        <label>Moon Phase</label>
+        <select onchange="wState.moon.phase=this.value; saveWeather();">
+          ${[["new","New Moon"],["crescent-left","Crescent Left"],["half-left","Half Left"],["gibbous-left","Gibbous Left"],["full","Full Moon"],["gibbous-right","Gibbous Right"],["half-right","Half Right"],["crescent-right","Crescent Right"]].map(([v,l])=>`<option value="${v}" ${wState.moon.phase===v?'selected':''}>${l}</option>`).join("")}
+        </select>
+      </div>
+      <div class="field" style="margin-top:10px;"><label>Moon Size</label><input type="range" min="0.5" max="1.8" step="0.05" value="${wState.moon.size}" oninput="wState.moon.size=this.value; saveWeather();"></div>
+      <div class="field" style="margin-top:10px;"><label>Moon Glow</label><input type="range" min="0" max="1" step="0.05" value="${wState.moon.glow}" oninput="wState.moon.glow=this.value; saveWeather();"></div>
+      <div class="field" style="display:flex;justify-content:space-between;align-items:center;background:var(--surface2);padding:10px 12px;border-radius:10px;margin-top:10px;">
+        <label style="margin:0">Moon Behind Clouds</label>
+        <input type="checkbox" style="width:22px;height:22px" ${wState.moon.behindClouds?'checked':''} onchange="wState.moon.behindClouds=this.checked; saveWeather();">
+      </div>
+      <div class="field" style="margin-top:12px;"><label>Rain Intensity</label><input type="range" min="0" max="100" value="${wState.rain}" oninput="wState.rain=this.value; saveWeather();"></div>
+      <div class="field" style="margin-top:10px;"><label>Thunder Frequency</label><input type="range" min="0" max="100" value="${wState.thunder}" oninput="wState.thunder=this.value; saveWeather();"></div>
+    </div>
+    <p class="muted" style="margin-top:15px; font-size:12px; line-height:1.4;">The hyper-realistic effects render strictly behind the glass UI layer to create a blurred depth-of-field window effect. Switch the app Theme to toggle between Daytime and Stormy.</p>
+  `);
+}
+
+$("toolCount").textContent=TOOLS.length;
+$("popular").innerHTML=["HTML Live Editor","Image Resizer","PDF Merger","PDF Text Extractor","JSON Formatter","Password Generator"].map(n=>`<button class="chip" onclick="openTool('${key(n)}')">${n}</button>`).join("");
+
+const savedTheme=localStorage.getItem("andtools_theme")||"dark";
+setTheme(savedTheme);
+populateCategories();
+refreshToolCount();
+renderTools();
+initWeather();
+</script>
+</body>
+</html>
