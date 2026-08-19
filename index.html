@@ -2994,15 +2994,12 @@ function renderWeather() {
 
   const windFactor = wState.wind / 50;
 
-
+  // Moon rendered behind clouds (Dark mode only)
   if(dark && wState.moon?.enabled && wState.moon?.behindClouds!==false) {
      drawMoon();
   }
 
-  if(!dark && wState.moon?.enabled && wState.moon?.behindClouds!==false){
-    drawMoon();
-  }
-
+  // Sun rendering for Light mode
   if(!dark) {
      sunAngle += 0.005 * (windFactor || 0.5);
      wCtx.save();
@@ -3037,8 +3034,10 @@ function renderWeather() {
      wCtx.fill();
   }
 
-
-  if(wState.moon?.enabled && wState.moon?.behindClouds===false) drawMoon();
+  // Moon rendered in front of clouds (Dark mode only)
+  if(dark && wState.moon?.enabled && wState.moon?.behindClouds===false) {
+     drawMoon();
+  }
 
   if(dark) {
      if(Math.random() < (wState.thunder / 15000)) flashOpacity = 0.7 + Math.random() * 0.3;
