@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="Toolvera — free browser-based tools for files, images, text, QR codes, developers and calculators.">
-<meta property="og:title" content="Toolvera — Free tools. Simple. Private. Useful.">
+<meta name="description" content="&tools — free browser-based tools for files, images, text, QR codes, developers and calculators.">
+<meta property="og:title" content="&tools — Free tools. Simple. Private. Useful.">
 <meta property="og:description" content="Convert, create, calculate and format directly in your browser.">
-<title>Toolvera — Free tools. Simple. Private. Useful.</title>
+<title>&tools — Free tools. Simple. Private. Useful.</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231a73e8'/%3E%3Cpath d='M18 18h28v7H36v21h-8V25H18z' fill='white'/%3E%3C/svg%3E">
 <!-- Libraries -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -485,7 +485,7 @@ main,.workspace,.modal,.overlay{
 
 <header>
   <div class="wrap nav">
-    <a class="brand" href="#" aria-label="Toolvera home"><span class="brand-mark">T</span>Toolvera</a>
+    <a class="brand" href="#" aria-label="&tools home"><span class="brand-mark">&</span>&tools</a>
     
     <div class="cat-container">
       <button class="navbtn" id="catBtn">Categories ▾</button>
@@ -512,12 +512,12 @@ main,.workspace,.modal,.overlay{
     <button class="iconbtn dots" id="dotsBtn" aria-label="Open menu" aria-expanded="false">⋮</button>
     
     <div class="menu glass" id="menu" role="menu">
-      <button onclick="about()">About Toolvera</button>
+      <button onclick="about()">About &tools</button>
       <button onclick="focusSearch()">Search Tools</button>
       <button onclick="cycleTheme()">Toggle Theme</button>
       <button onclick="showFavorites()">★ Favorites</button>
       <button onclick="showRecent()">Recent Tools</button>
-      <button onclick="shareSite()">Share Toolvera</button>
+      <button onclick="shareSite()">Share &tools</button>
       <button onclick="copyPage()">Copy Page Link</button>
       <hr>
       <button onclick="openWeatherModal()">Weather Effects ⛅</button>
@@ -534,7 +534,7 @@ main,.workspace,.modal,.overlay{
 <section class="hero">
 <div class="wrap heroGrid">
 <div>
-<div class="eyebrow">TOOLVERA / BROWSER UTILITIES</div>
+<div class="eyebrow">&tools / BROWSER UTILITIES</div>
 <h1>The tools you need, seamlessly.</h1>
 <p>Convert files, create PDFs, edit HTML, resize images, and generate QR codes — directly and securely in your browser with real-time liquid UI.</p>
 <div class="heroSearch"><input id="heroSearch" placeholder="Search tools… Try image to PDF, QR code, HTML editor"><button class="primary" onclick="doSearch()">Find a tool</button></div>
@@ -561,7 +561,7 @@ main,.workspace,.modal,.overlay{
 
 <footer>
 <div class="wrap footgrid">
-<div><h2 style="color:var(--text);margin:0">Toolvera</h2><p>Free tools for everyday digital tasks.</p><p>© 2026 Toolvera.</p></div>
+<div><h2 style="color:var(--text);margin:0">&tools</h2><p>Free tools for everyday digital tasks.</p><p>© 2026 &tools.</p></div>
 <div><h4>Tools</h4><a href="#tools" onclick="setCategory('')">All tools</a><a href="#tools" onclick="$('catBtn').click();return false;">Categories</a><a href="#" onclick="showFavorites();return false">Favorites</a></div>
 <div><h4>Support</h4><a href="#" onclick="about();return false">About</a><a href="#" onclick="coffee();return false">Buy Me a Coffee</a></div>
 <div><h4>Info</h4><a href="#" onclick="about();return false">Client-Side Architecture</a></div>
@@ -747,11 +747,11 @@ const TOOLS=[
 const byCat={};TOOLS.forEach(t=>(byCat[t[0]]??=[]).push(t));
 function refreshToolCount(){const e=$("toolCount");if(e)e.textContent=TOOLS.length}
 const key=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,"-");
-const state={favorites:new Set(JSON.parse(localStorage.getItem("toolvera_favorites")||"[]")),recent:JSON.parse(localStorage.getItem("toolvera_recent_tools")||"[]")};
+const state={favorites:new Set(JSON.parse(localStorage.getItem("&tools_favorites")||"[]")),recent:JSON.parse(localStorage.getItem("&tools_recent_tools")||"[]")};
 const $=id=>document.getElementById(id);
 let currentCategory = "";
 
-function save(){localStorage.setItem("toolvera_favorites",JSON.stringify([...state.favorites]));localStorage.setItem("toolvera_recent_tools",JSON.stringify(state.recent.slice(0,12)))}
+function save(){localStorage.setItem("&tools_favorites",JSON.stringify([...state.favorites]));localStorage.setItem("&tools_recent_tools",JSON.stringify(state.recent.slice(0,12)))}
 function toast(s){const x=$("toast");x.textContent=s;x.classList.add("show");clearTimeout(window.__toast);window.__toast=setTimeout(()=>x.classList.remove("show"),2200)}
 
 function populateCategories() {
@@ -810,7 +810,7 @@ function closeMenu(){$("menu").classList.remove("open");$("dotsBtn").setAttribut
 
 function setTheme(v){
   document.documentElement.dataset.theme=v;
-  localStorage.setItem("toolvera_theme",v);
+  localStorage.setItem("&tools_theme",v);
   $("themeBtn").textContent=v==="dark"?"☀":"◐";
   if(wState.active) {
     if(v==='dark') {
@@ -821,7 +821,7 @@ function setTheme(v){
   }
 }
 function cycleTheme(){
-  const cur=localStorage.getItem("toolvera_theme")||"dark";
+  const cur=localStorage.getItem("&tools_theme")||"dark";
   setTheme(cur==="dark"?"light":"dark");
   closeMenu();
 }
@@ -829,12 +829,12 @@ $("themeBtn").onclick=cycleTheme;
 
 function about() {
   closeMenu();
-  openModal("About Toolvera", `
-    <p><strong>Toolvera</strong> is a lightning-fast, privacy-first utility suite designed to process files, text, images, and calculations entirely within your local browser environment. Because everything runs client-side, your data never leaves your device, ensuring complete privacy and security.</p>
+  openModal("About &tools", `
+    <p><strong>&tools</strong> is a lightning-fast, privacy-first utility suite designed to process files, text, images, and calculations entirely within your local browser environment. Because everything runs client-side, your data never leaves your device, ensuring complete privacy and security.</p>
     <p>This project was proudly created and developed by <strong>Akshay S L</strong>.</p>
     <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--line);">
       <h4 style="margin: 0 0 8px 0; color: var(--accent);">Explore More: 1000 Codes</h4>
-      <p>Toolvera is part of a larger ecosystem of developer resources. If you are looking for high-quality projects, source code, and web development resources, be sure to explore our sister site, <strong><a href="https://1000codes.online/" target="_blank" style="color: var(--accent); text-decoration: none;">1000 Codes</a></strong>.</p>
+      <p>&tools is part of a larger ecosystem of developer resources. If you are looking for high-quality projects, source code, and web development resources, be sure to explore our sister site, <strong><a href="https://1000codes.online/" target="_blank" style="color: var(--accent); text-decoration: none;">1000 Codes</a></strong>.</p>
     </div>
     <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--line);">
       <h4 style="margin: 0 0 8px 0; color: var(--accent);">Contact & Support</h4>
@@ -843,14 +843,14 @@ function about() {
   `);
 }
 
-function coffee(){closeMenu();openModal("☕ Buy Me a Coffee",`<div class="coffee"><div><p>Enjoying Toolvera? Support helps keep the tools free, fast, and constantly updated.</p><div class="upi">akshaysldp@slc</div><div class="actions" style="margin-top:12px"><button class="primary" onclick="copyText('akshaysldp@slc');toast('✓ UPI ID copied')">Copy UPI ID</button><a class="secondary" style="text-decoration:none;display:inline-flex;align-items:center" href="upi://pay?pa=akshaysldp@slc&pn=Toolvera&cu=INR">Open UPI App</a></div></div><div class="center"><div id="upiQr" class="qrbox"></div><p class="muted">Scan & Pay via UPI</p></div></div>`);setTimeout(()=>new QRCode($("upiQr"),{text:"upi://pay?pa=akshaysldp@slc&pn=Toolvera&cu=INR",width:180,height:180,colorDark:"#000",colorLight:"#fff"}),50)}
+function coffee(){closeMenu();openModal("☕ Buy Me a Coffee",`<div class="coffee"><div><p>Enjoying &tools? Support helps keep the tools free, fast, and constantly updated.</p><div class="upi">akshaysldp@slc</div><div class="actions" style="margin-top:12px"><button class="primary" onclick="copyText('akshaysldp@slc');toast('✓ UPI ID copied')">Copy UPI ID</button><a class="secondary" style="text-decoration:none;display:inline-flex;align-items:center" href="upi://pay?pa=akshaysldp@slc&pn=&tools&cu=INR">Open UPI App</a></div></div><div class="center"><div id="upiQr" class="qrbox"></div><p class="muted">Scan & Pay via UPI</p></div></div>`);setTimeout(()=>new QRCode($("upiQr"),{text:"upi://pay?pa=akshaysldp@slc&pn=&tools&cu=INR",width:180,height:180,colorDark:"#000",colorLight:"#fff"}),50)}
 
-function shareSite(){closeMenu();if(navigator.share)navigator.share({title:"Toolvera",text:"Free tools. Simple. Private. Useful.",url:location.href});else copyPage()}
+function shareSite(){closeMenu();if(navigator.share)navigator.share({title:"&tools",text:"Free tools. Simple. Private. Useful.",url:location.href});else copyPage()}
 function copyPage(){copyText(location.href);toast("✓ Link copied")}
 async function copyText(v){try{await navigator.clipboard.writeText(v)}catch{const ta=document.createElement("textarea");ta.value=v;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove()}}
-function exportData(){closeMenu();const data={favorites:[...state.favorites],recent:state.recent,theme:localStorage.getItem("toolvera_theme")||"dark",highscores:JSON.parse(localStorage.getItem("toolvera_highscores")||"{}"),weather:JSON.parse(localStorage.getItem("toolvera_weather")||"{}")};downloadBlob(new Blob([JSON.stringify(data,null,2)],{type:"application/json"}),"toolvera-data.json")}
-function importData(){closeMenu();const i=document.createElement("input");i.type="file";i.accept=".json,application/json";i.onchange=async()=>{try{const d=JSON.parse(await i.files[0].text());if(Array.isArray(d.favorites))state.favorites=new Set(d.favorites.filter(x=>typeof x==="string"));if(Array.isArray(d.recent))state.recent=d.recent.filter(x=>typeof x==="string").slice(0,12);if(["light","dark"].includes(d.theme))setTheme(d.theme);if(d.highscores&&typeof d.highscores==="object")localStorage.setItem("toolvera_highscores",JSON.stringify(d.highscores));if(d.weather)localStorage.setItem("toolvera_weather",JSON.stringify(d.weather));save();renderTools();toast("✓ Data imported")}catch{toast("Could not import file")}};i.click()}
-function resetSettings(){closeMenu();if(confirm("Reset Toolvera settings, favorites, recent tools and scores?")){localStorage.removeItem("toolvera_favorites");localStorage.removeItem("toolvera_recent_tools");localStorage.removeItem("toolvera_theme");localStorage.removeItem("toolvera_highscores");localStorage.removeItem("toolvera_weather");state.favorites.clear();state.recent=[];setTheme("dark");renderTools();toast("Settings reset")}}
+function exportData(){closeMenu();const data={favorites:[...state.favorites],recent:state.recent,theme:localStorage.getItem("&tools_theme")||"dark",highscores:JSON.parse(localStorage.getItem("&tools_highscores")||"{}"),weather:JSON.parse(localStorage.getItem("&tools_weather")||"{}")};downloadBlob(new Blob([JSON.stringify(data,null,2)],{type:"application/json"}),"&tools-data.json")}
+function importData(){closeMenu();const i=document.createElement("input");i.type="file";i.accept=".json,application/json";i.onchange=async()=>{try{const d=JSON.parse(await i.files[0].text());if(Array.isArray(d.favorites))state.favorites=new Set(d.favorites.filter(x=>typeof x==="string"));if(Array.isArray(d.recent))state.recent=d.recent.filter(x=>typeof x==="string").slice(0,12);if(["light","dark"].includes(d.theme))setTheme(d.theme);if(d.highscores&&typeof d.highscores==="object")localStorage.setItem("&tools_highscores",JSON.stringify(d.highscores));if(d.weather)localStorage.setItem("&tools_weather",JSON.stringify(d.weather));save();renderTools();toast("✓ Data imported")}catch{toast("Could not import file")}};i.click()}
+function resetSettings(){closeMenu();if(confirm("Reset &tools settings, favorites, recent tools and scores?")){localStorage.removeItem("&tools_favorites");localStorage.removeItem("&tools_recent_tools");localStorage.removeItem("&tools_theme");localStorage.removeItem("&tools_highscores");localStorage.removeItem("&tools_weather");state.favorites.clear();state.recent=[];setTheme("dark");renderTools();toast("Settings reset")}}
 function closeWorkspace(){if(scState?.game)stopCalcGame();$("workspace").classList.remove("active");$("wsBody").innerHTML=""}
 
 function openTool(id){
@@ -987,7 +987,7 @@ window.updateLivePreview = function() {
 };
 window.downloadLiveHtml = function() {
   const code = $("htmlCode").value;
-  downloadBlob(new Blob([code], {type:"text/html"}), "toolvera-project.html");
+  downloadBlob(new Blob([code], {type:"text/html"}), "&tools-project.html");
   toast("✓ HTML File Downloaded");
 };
 window.openHtmlFullscreen = function() {
@@ -1119,7 +1119,7 @@ async function processImage(name){
     const q=name==="Image Compressor"?+$("quality").value:0.92;
     const ext=mime.split("/")[1];
     c.toBlob(b=>{
-      downloadBlob(b,`${f.name.replace(/\.[^.]+$/,"")}-toolvera.${ext}`);
+      downloadBlob(b,`${f.name.replace(/\.[^.]+$/,"")}-&tools.${ext}`);
       $("fileResult").innerHTML=`<div class="result glass">✓ Download started: ${c.width}×${c.height}px (${ext.toUpperCase()})</div>`;
     },mime,q);
   }catch(e){console.error(e);toast("Could not process image file")}
@@ -1136,7 +1136,7 @@ async function imagesToPdf(){
     const maxW=190,maxH=277,s=Math.min(maxW/im.width,maxH/im.height);
     pdf.addImage(im,"JPEG",(210-im.width*s)/2,(297-im.height*s)/2,im.width*s,im.height*s);
   }
-  pdf.save("toolvera-images.pdf");
+  pdf.save("&tools-images.pdf");
   $("fileResult").innerHTML=`<div class="result glass">✓ Downloaded PDF with ${fs.length} pages.</div>`;
   toast("✓ PDF created & downloaded");
 }
@@ -1172,7 +1172,7 @@ function collage(){
       x.drawImage(im,cl*cell+(cell-w)/2,r*cell+(cell-h)/2,w,h);
     });
     c.toBlob(b=>{
-      downloadBlob(b,"toolvera-collage.png");
+      downloadBlob(b,"&tools-collage.png");
       $("fileResult").innerHTML=`<div class="result glass">✓ Collage created and downloaded.</div>`;
     });
   });
@@ -1344,7 +1344,7 @@ async function txtDocx(){
   const ps = text.split(/\r?\n/).map(x=>`<w:p><w:r><w:t xml:space="preserve">${escXml(x)}</w:t></w:r></w:p>`).join("");
   zip.file("word/document.xml", `<?xml version="1.0"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${ps}<w:sectPr/></w:body></w:document>`);
   const blob = await zip.generateAsync({type:"blob"});
-  downloadBlob(blob, "toolvera-document.docx");
+  downloadBlob(blob, "&tools-document.docx");
   $("fileResult").innerHTML=`<div class="result glass">✓ Generated and downloaded DOCX document.</div>`;
 }
 function escXml(s){return String(s).replace(/[<>&'"]/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;","'":"&apos;",'"':"&quot;"}[c]))}
@@ -1368,21 +1368,21 @@ async function docConvert(name){
     const {jsPDF}=window.jspdf,p=new jsPDF();
     const lines=p.splitTextToSize(text,180);
     p.text(lines,15,18);
-    p.save("toolvera-text.pdf");
+    p.save("&tools-text.pdf");
   }else if(name==="Markdown to HTML"){
     const html=md(text);
     const doc=`<!doctype html><html><head><meta charset="utf-8"><title>Markdown Document</title><style>body{font-family:system-ui,sans-serif;padding:30px;line-height:1.6;max-width:800px;margin:auto}</style></head><body>${html}</body></html>`;
-    downloadBlob(new Blob([doc],{type:"text/html"}),"toolvera-markdown.html");
+    downloadBlob(new Blob([doc],{type:"text/html"}),"&tools-markdown.html");
   }else if(name==="HTML to Markdown"){
     let mdText = text.replace(/<h1>(.*?)<\/h1>/gi, "# $1\n").replace(/<h2>(.*?)<\/h2>/gi, "## $1\n").replace(/<h3>(.*?)<\/h3>/gi, "### $1\n").replace(/<strong>(.*?)<\/strong>/gi, "**$1**").replace(/<b>(.*?)<\/b>/gi, "**$1**").replace(/<em>(.*?)<\/em>/gi, "*$1*").replace(/<p>(.*?)<\/p>/gi, "$1\n\n").replace(/<br\s*[\/]?>/gi, "\n");
-    downloadBlob(new Blob([mdText],{type:"text/markdown"}),"toolvera-converted.md");
+    downloadBlob(new Blob([mdText],{type:"text/markdown"}),"&tools-converted.md");
   }else if(name==="TXT to HTML"){
     let htmlText = text.split(/\r?\n\r?\n/).map(p=>`<p>${esc(p)}</p>`).join("\n");
     const doc=`<!doctype html><html><head><meta charset="utf-8"><title>Converted Text</title></head><body>${htmlText}</body></html>`;
-    downloadBlob(new Blob([doc],{type:"text/html"}),"toolvera-text.html");
+    downloadBlob(new Blob([doc],{type:"text/html"}),"&tools-text.html");
   }else if(name==="HTML to PDF"){
     const {jsPDF}=window.jspdf,p=new jsPDF();
-    p.html(text,{callback:doc=>doc.save("toolvera-html.pdf"),x:10,y:10,width:190,windowWidth:800});
+    p.html(text,{callback:doc=>doc.save("&tools-html.pdf"),x:10,y:10,width:190,windowWidth:800});
   }else if(name==="CSV to PDF"){
     const {jsPDF}=window.jspdf,p=new jsPDF();
     const rows=text.trim().split(/\r?\n/).map(r=>r.split(","));
@@ -1392,7 +1392,7 @@ async function docConvert(name){
       y+=8;
       if(y>280){p.addPage();y=18}
     });
-    p.save("toolvera-table.pdf");
+    p.save("&tools-table.pdf");
   }
   $("fileResult").innerHTML=`<div class="result glass">✓ File converted and download initiated!</div>`;
 }
@@ -1434,7 +1434,7 @@ function makeQR(name){
   if(name==="Wi-Fi QR")text=`WIFI:T:WPA;S:${$("ssid").value};P:${$("wpass").value};;`;
   if(name==="UPI QR"){
     const u=$("upi").value.trim();if(!u)return toast("Enter your UPI ID");
-    text=`upi://pay?pa=${encodeURIComponent(u)}&pn=${encodeURIComponent($("payee").value||"Toolvera")}&cu=INR`;
+    text=`upi://pay?pa=${encodeURIComponent(u)}&pn=${encodeURIComponent($("payee").value||"&tools")}&cu=INR`;
   }
   if(name==="WhatsApp QR"){
     const cc=($('waQrCode')?.value||'').replace(/\D/g,'');
@@ -1455,7 +1455,7 @@ function makeQR(name){
 function downloadQR(){
   const img=$("qr")?.querySelector("img");
   if(img&&img.src){
-    const a=document.createElement("a");a.href=img.src;a.download="toolvera-qr.png";a.click();
+    const a=document.createElement("a");a.href=img.src;a.download="&tools-qr.png";a.click();
   }
 }
 
@@ -2834,7 +2834,7 @@ const defaultWeather = {
     behindClouds: true
   }
 };
-const wState = JSON.parse(localStorage.getItem('toolvera_weather')) || defaultWeather;
+const wState = JSON.parse(localStorage.getItem('&tools_weather')) || defaultWeather;
 let wCanvas, wCtx, wRaf;
 wState.moon = Object.assign({
   enabled:false, phase:"full", size:1.15, glow:0.8, behindClouds:true
@@ -2845,7 +2845,7 @@ let flashOpacity = 0;
 let sunAngle = 0;
 
 function saveWeather() {
-  localStorage.setItem('toolvera_weather', JSON.stringify(wState));
+  localStorage.setItem('&tools_weather', JSON.stringify(wState));
 }
 
 function initWeather() {
@@ -2912,7 +2912,7 @@ function toggleWeather(state) {
   if(state) {
     wCanvas.style.display = 'block';
     if(!wRaf) wRaf = requestAnimationFrame(renderWeather);
-    const cur=localStorage.getItem("toolvera_theme")||"dark";
+    const cur=localStorage.getItem("&tools_theme")||"dark";
     if(document.getElementById("darkControls")) {
       document.getElementById("darkControls").style.display = (cur==="dark") ? 'block' : 'none';
     }
@@ -3123,7 +3123,7 @@ function openWeatherModal() {
 $("toolCount").textContent=TOOLS.length;
 $("popular").innerHTML=["HTML Live Editor","Image Resizer","PDF Merger","PDF Text Extractor","JSON Formatter","Password Generator"].map(n=>`<button class="chip" onclick="openTool('${key(n)}')">${n}</button>`).join("");
 
-const savedTheme=localStorage.getItem("toolvera_theme")||"dark";
+const savedTheme=localStorage.getItem("&tools_theme")||"dark";
 setTheme(savedTheme);
 populateCategories();
 refreshToolCount();
