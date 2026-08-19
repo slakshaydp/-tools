@@ -211,7 +211,7 @@ main,.workspace,.modal,.overlay{scroll-margin-top:78px}
 
 <header>
   <div class="wrap nav">
-    <a class="brand" href="#" aria-label="&tools home"><span class="brand-mark">&amp;</span>&amp;tools</a>
+    <a class="brand" href="#" aria-label="&tools home"><span class="brand-mark">&amp;</span>&tools</a>
     
     <div class="cat-container">
       <button class="navbtn" id="catBtn">Categories ▾</button>
@@ -238,13 +238,13 @@ main,.workspace,.modal,.overlay{scroll-margin-top:78px}
     <button class="iconbtn dots" id="dotsBtn" aria-label="Open menu" aria-expanded="false">⋮</button>
     
     <div class="menu glass" id="menu" role="menu">
-      <button onclick="about()">About &amp;tools</button>
+      <button onclick="about()">About &tools</button>
       <button onclick="contact()">Contact</button>
       <button onclick="focusSearch()">Search Tools</button>
       <button onclick="cycleTheme()">Toggle Theme</button>
       <button onclick="showFavorites()">★ Favorites</button>
       <button onclick="showRecent()">Recent Tools</button>
-      <button onclick="shareSite()">Share &amp;tools</button>
+      <button onclick="shareSite()">Share &tools</button>
       <button onclick="copyPage()">Copy Page Link</button>
       <hr>
       <button onclick="openWeatherModal()">Weather Effects ⛅</button>
@@ -261,7 +261,7 @@ main,.workspace,.modal,.overlay{scroll-margin-top:78px}
 <section class="hero">
 <div class="wrap heroGrid">
 <div>
-<div class="eyebrow">&amp;TOOLS / BROWSER UTILITIES</div>
+<div class="eyebrow">&tools / BROWSER UTILITIES</div>
 <h1>The tools you need, seamlessly.</h1>
 <p>Convert files, create PDFs, edit HTML, resize images, and generate QR codes — directly and securely in your browser with real-time liquid UI.</p>
 <div class="heroSearch"><input id="heroSearch" placeholder="Search tools… Try image to PDF, QR code, HTML editor"><button class="primary" onclick="doSearch()">Find a tool</button></div>
@@ -288,7 +288,7 @@ main,.workspace,.modal,.overlay{scroll-margin-top:78px}
 
 <footer>
 <div class="wrap footgrid">
-<div><h2 style="color:var(--text);margin:0">&amp;tools</h2><p>Free tools for everyday digital tasks.</p><p>© 2026 &amp;tools.</p></div>
+<div><h2 style="color:var(--text);margin:0">&tools</h2><p>Free tools for everyday digital tasks.</p><p>© 2026 &tools.</p></div>
 <div><h4>Tools</h4><a href="#tools" onclick="setCategory('')">All tools</a><a href="#tools" onclick="$('catBtn').click();return false;">Categories</a><a href="#" onclick="showFavorites();return false">Favorites</a></div>
 <div><h4>Support</h4><a href="#" onclick="about();return false">About</a><a href="#" onclick="contact();return false">Contact</a><a href="#" onclick="coffee();return false">Buy Me a Coffee</a></div>
 <div><h4>Info</h4><a href="#" onclick="about();return false">Client-Side Architecture</a></div>
@@ -544,12 +544,12 @@ $("themeBtn").onclick=cycleTheme;
 
 function about() {
   closeMenu();
-  openModal("About &amp;tools", `
-    <p><strong>&amp;tools</strong> is a lightning-fast, privacy-first utility suite designed to process files, text, images, and calculations entirely within your local browser environment. Because everything runs client-side, your data never leaves your device, ensuring complete privacy and security.</p>
+  openModal("About &tools", `
+    <p><strong>&tools</strong> is a lightning-fast, privacy-first utility suite designed to process files, text, images, and calculations entirely within your local browser environment. Because everything runs client-side, your data never leaves your device, ensuring complete privacy and security.</p>
     <p>This project was proudly created and developed by <strong>Akshay S L</strong>.</p>
     <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--line);">
       <h4 style="margin: 0 0 8px 0; color: var(--accent);">Explore More: 1000 Codes</h4>
-      <p>&amp;tools is part of a larger ecosystem of developer resources. If you are looking for high-quality projects, source code, and web development resources, be sure to explore our sister site, <strong><a href="https://1000codes.online/" target="_blank" style="color: var(--accent); text-decoration: none;">1000 Codes</a></strong>.</p>
+      <p>&tools is part of a larger ecosystem of developer resources. If you are looking for high-quality projects, source code, and web development resources, be sure to explore our sister site, <strong><a href="https://1000codes.online/" target="_blank" style="color: var(--accent); text-decoration: none;">1000 Codes</a></strong>.</p>
     </div>
   `);
 }
@@ -568,7 +568,7 @@ function contact() {
 
 function coffee(){
   closeMenu();
-  openModal("☕ Buy Me a Coffee",`<div class="coffee"><div><p>Enjoying &amp;tools? Support helps keep the tools free, fast, and constantly updated.</p><div class="upi">akshaysldp@slc</div><div class="actions" style="margin-top:12px"><button class="primary" onclick="copyText('akshaysldp@slc');toast('✓ UPI ID copied')">Copy UPI ID</button><a class="secondary" style="text-decoration:none;display:inline-flex;align-items:center" href="upi://pay?pa=akshaysldp@slc&pn=%26tools&cu=INR&am=100">Open UPI App</a></div></div><div class="center"><div id="upiQr" class="qrbox"></div><p class="muted">Scan & Pay via UPI</p></div></div>`);
+  openModal("☕ Buy Me a Coffee",`<div class="coffee"><div><p>Enjoying &tools? Support helps keep the tools free, fast, and constantly updated.</p><div class="upi">akshaysldp@slc</div><div class="actions" style="margin-top:12px"><button class="primary" onclick="copyText('akshaysldp@slc');toast('✓ UPI ID copied')">Copy UPI ID</button><a class="secondary" style="text-decoration:none;display:inline-flex;align-items:center" href="upi://pay?pa=akshaysldp@slc&pn=%26tools&cu=INR&am=100">Open UPI App</a></div></div><div class="center"><div id="upiQr" class="qrbox"></div><p class="muted">Scan & Pay via UPI</p></div></div>`);
   setTimeout(()=>new QRCode($("upiQr"),{text:"upi://pay?pa=akshaysldp@slc&pn=%26tools&cu=INR&am=100",width:180,height:180,colorDark:"#000",colorLight:"#fff"}),50);
 }
 
